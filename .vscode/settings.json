@@ -1,0 +1,16 @@
+{
+    "gta3script.buildflags": {
+        "gta3": [
+		    "--guesser",
+            "--cs"
+        ],
+        "gtavc": [
+		    "--guesser",
+            "--cs"
+        ],
+        "gtasa": [
+            "--guesser",
+            "--cs"
+        ]
+    }
+}
