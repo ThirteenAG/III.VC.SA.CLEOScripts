@@ -1,0 +1,315 @@
+{$CLEO .cs}
+0000: 
+const
+{0}LEFTSTICKX = 0xB73458       //<LS>
+{1}LEFTSTICKY = 0xB7345A       //LS^
+{2}RIGHTSTICKX = 0xB7345C      //<RS>
+{3}RIGHTSTICKY = 0xB7345E      //RS^
+{4}LEFTSHOULDER1 = 0xB73460    //LB
+{5}LEFTSHOULDER2 = 0xB73462    //LT
+{6}RIGHTSHOULDER1 = 0xB73464   //RB
+{7}RIGHTSHOULDER2 = 0xB73466   //RT
+{8}DPADUP = 0xB73468           //UP
+{9}DPADDOWN = 0xB7346A         //DOWN
+{10}DPADLEFT = 0xB7346C        //LEFT
+{11}DPADRIGHT = 0xB7346E       //RIGHT
+{12}START = 0xB73470           //START
+{13}SELECT = 0xB73472          //SELECT
+{14}SQUARE = 0xB73474          //X
+{15}TRIANGLE = 0xB73476        //Y
+{16}CROSS = 0xB73478           //A
+{17}CIRCLE = 0xB7347A          //B
+{18}LEFTSHOCK = 0xB7347C       //LS
+{19}RIGHTSHOCK = 0xB7347E      //RS
+{20}GUIDE = 0xB73480           //Guide
+end
+
+// driveby camera movement
+0A8C: write_memory 0x64BC9F size 4 value 0x90909090 virtual_protect 1
+0A8C: write_memory 0x64BCA3 size 4 value 0x90909090 virtual_protect 1
+0A8C: write_memory 0x64BCA7 size 1 value 0x90 virtual_protect 1
+
+/* auto switch to smg
+0A8C: write_memory 0x64DB49 size 4 value 0x90909090 virtual_protect 1
+0A8C: write_memory 0x64DB4D size 4 value 0x90909090 virtual_protect 1
+0A8C: write_memory 0x64DB51 size 1 value 0x90 virtual_protect 1 */ 
+
+0A8C: write_memory 0x522423 size 2 value 0x9090 virtual_protect 1  //camera zoom   
+
+0AF0: 7@ = get_int_from_ini_file "SA.ManualDrivebyRemake" section "MAIN" key "DrivebyControlType"
+0AF0: 8@ = get_int_from_ini_file "SA.ManualDrivebyRemake" section "MAIN" key "DrivebyAimButton"
+0AF0: 9@ = get_int_from_ini_file "SA.ManualDrivebyRemake" section "MAIN" key "RestoreCameraAfterDriveby"
+
+while true
+wait 0
+    if and
+     00DF:   actor $PLAYER_ACTOR driving
+     84C8:   not actor $PLAYER_ACTOR driving_flying_vehicle 
+     84A7:   not actor $PLAYER_ACTOR driving_boat 
+     80DD:   not actor $PLAYER_ACTOR driving_car_with_model #RHINO 
+     80DD:   not actor $PLAYER_ACTOR driving_car_with_model #FIRETRUK
+     80DD:   not actor $PLAYER_ACTOR driving_car_with_model #SWATVAN 
+     8241:   not player $PLAYER_CHAR in_remote_mode
+    then    
+        03C0: 25@ = store_car_char_is_in_no_save $PLAYER_ACTOR 
+        0432: 17@ = get_actor_handle_from_car 25@ passenger_seat 0 
+        0432: 18@ = get_actor_handle_from_car 25@ passenger_seat 1
+        0432: 19@ = get_actor_handle_from_car 25@ passenger_seat 2
+        
+	    0A96: 24@ = actor $PLAYER_ACTOR struct
+        000A: 24@ += 0x718 //[byte] Current weapon slot (1 byte)
+        0A8D: 24@ = read_memory 24@ size 1 virtual_protect 1
+        24@ += 1
+	    04B8: get_char_weapon_in_slot $PLAYER_ACTOR slot 24@ store_weapon_to 26@ ammo_to 27@ model_to 31@
+        
+        if and 
+         24@ == 1
+         0A4B:   has_pad_in_hands
+        then
+		 0A8C: write_memory 0x527862 size 2 value 0xC084 virtual_protect 1   //disable CPad::GetLookLeft(void)
+         0A8C: write_memory 0x527894 size 2 value 0xC084 virtual_protect 1   //disable CPad::GetLookRight(void)
+        else
+		 0A8C: write_memory 0x527862 size 2 value 0x9090 virtual_protect 1   //disable CPad::GetLookLeft(void)
+         0A8C: write_memory 0x527894 size 2 value 0x9090 virtual_protect 1   //disable CPad::GetLookRight(void)
+        end
+
+            if and
+             803C:   $PLAYER_ACTOR != 17@
+             803C:   $PLAYER_ACTOR != 18@
+             803C:   $PLAYER_ACTOR != 19@
+            then
+                0A8D: 20@ = read_memory LEFTSHOULDER1 size 2 virtual_protect 1 
+	            if or
+	             0AB0:  key_pressed 8@
+	             20@ <> 0
+	            then
+	             0A96: 24@ = actor $PLAYER_ACTOR struct
+                 000A: 24@ += 0x718 //[byte] Current weapon slot (1 byte)
+                 0A8D: 24@ = read_memory 24@ size 1 virtual_protect 1
+                 24@ += 1
+	             04B8: get_char_weapon_in_slot $PLAYER_ACTOR slot 24@ store_weapon_to 26@ ammo_to 27@ model_to 31@
+
+	             0A8D: 21@ = read_memory RIGHTSHOULDER1 size 2 virtual_protect 1  
+					if and
+					27@ > 0
+					21@ == 0
+					24@ > 2
+					24@ < 7
+					then
+					0A8C: write_memory 0x52161A size 1 value 0xE9 virtual_protect 1
+					0A8C: write_memory 0x52161B size 4 value 0x000000B3 virtual_protect 1
+					0713: actor $PLAYER_ACTOR driveby_actor -1 car -1 point 0 0 0 radius 900.0 4 0 firing_rate 100
+
+						while true
+						wait 0
+						  0A8D: 20@ = read_memory LEFTSHOULDER1 size 2 virtual_protect 1  
+							if and 
+								20@ == 0
+								8AB0: not key_pressed 8@ 
+							then
+								break
+							end
+							
+							gosub @weaponswitch
+							
+							0A96: 24@ = actor $PLAYER_ACTOR struct
+ 				            000A: 24@ += 0x718 //[byte] Current weapon slot (1 byte)
+ 				            0A8D: 24@ = read_memory 24@ size 1 virtual_protect 1
+  				            24@ += 1
+					        04B8: get_char_weapon_in_slot $PLAYER_ACTOR slot 24@ store_weapon_to 26@ ammo_to 27@ model_to 31@
+                            
+                            if
+                             27@ <= 0
+                            then
+                             break
+                            end
+							
+							if
+							 20@ <> 0
+							then
+								if
+								 7@ == 0
+								then
+								 0A8C: write_memory CIRCLE size 2 value 0xFF virtual_protect 1 
+								else
+								0A8D: 21@ = read_memory RIGHTSHOULDER1 size 2 virtual_protect 1
+									if
+									 21@ <> 0
+									then
+									 0A8C: write_memory CIRCLE size 2 value 0xFF virtual_protect 1
+									end
+								end
+							end
+							
+						end
+						0687: clear_actor $PLAYER_ACTOR task
+					    0A8C: write_memory 0x52161A size 1 value 0x0F virtual_protect 1
+					    0A8C: write_memory 0x52161B size 4 value 0x071887BE virtual_protect 1
+
+					    if 9@ <> 0
+					    then
+						 02EB: restore_camera_with_jumpcut
+						end
+                    end
+			    end			    
+              gosub @weaponswitch
+            end 
+    end
+end
+
+
+:weaponswitch
+if
+0A4B:   has_pad_in_hands
+then
+ 0A8D: 22@ = read_memory SQUARE size 2 virtual_protect 1 
+     if
+         22@ <> 0
+     then
+      0A96: 13@ = actor $PLAYER_ACTOR struct
+      000A: 13@ += 0x718 //[byte] Current weapon slot (1 byte)
+      0A8D: 13@ = read_memory 13@ size 1 virtual_protect 1
+      13@ += 1
+      
+      for 14@ = 1 to 7 step 1
+      13@ += 1
+      if 13@ >= 7
+      then
+       13@ = 1
+      end
+      if 13@ == 2
+      then
+       13@ = 3
+      end
+      04B8: get_char_weapon_in_slot $PLAYER_ACTOR slot 13@ store_weapon_to 26@ ammo_to 27@ model_to 31@
+         if or
+          13@ == 1
+          27@ > 0
+         then
+          0A8D: 20@ = read_memory LEFTSHOULDER1 size 2 virtual_protect 1 
+          if and
+           13@ == 1
+           20@ <> 0
+          then
+           continue
+          end
+           0A96: 15@ = actor $PLAYER_ACTOR struct
+           0AA6: call_method 0x5E6280 struct 15@ params 1 pop 0 26@
+           break
+         end    
+      end // for
+         
+         while true
+         wait 0
+         0A8D: 22@ = read_memory SQUARE size 2 virtual_protect 1 
+             if
+              22@ == 0
+             then
+              break
+             end
+         end
+     end
+else
+ if 
+ 00E1:   player 0 pressed_key 5 // ~k~~VEHICLE_LOOKLEFT~ 
+ then
+  if
+  80E1:  not player 0 pressed_key 7 // ~k~~VEHICLE_LOOKRIGHT~ 
+  then
+      0A96: 13@ = actor $PLAYER_ACTOR struct
+      000A: 13@ += 0x718 //[byte] Current weapon slot (1 byte)
+      0A8D: 13@ = read_memory 13@ size 1 virtual_protect 1
+      13@ += 1
+      
+      for 14@ = 1 to 7 step 1
+      13@ += 1
+      if 13@ >= 7
+      then
+       13@ = 1
+      end
+      if 13@ == 2
+      then
+       13@ = 3
+      end
+      04B8: get_char_weapon_in_slot $PLAYER_ACTOR slot 13@ store_weapon_to 26@ ammo_to 27@ model_to 31@
+         if or
+          13@ == 1
+          27@ > 0
+         then
+          if and
+           13@ == 1
+           0AB0:  key_pressed 8@
+          then
+           continue
+          end
+          0A96: 15@ = actor $PLAYER_ACTOR struct
+          0AA6: call_method 0x5E6280 struct 15@ params 1 pop 0 26@
+          break
+         end    
+      end // for
+      
+         while true
+         wait 0
+             if
+              80E1: not  player 0 pressed_key 5 // ~k~~VEHICLE_LOOKLEFT~ 
+             then
+              break
+             end
+         end
+  end
+ end
+ 
+ if 
+ 00E1:   player 0 pressed_key 7 // ~k~~VEHICLE_LOOKRIGHT~ 
+ then
+  if
+  80E1:  not player 0 pressed_key 5 // ~k~~VEHICLE_LOOKLEFT~ 
+  then
+      0A96: 13@ = actor $PLAYER_ACTOR struct
+      000A: 13@ += 0x718 //[byte] Current weapon slot (1 byte)
+      0A8D: 13@ = read_memory 13@ size 1 virtual_protect 1
+      13@ += 1
+      
+      for 14@ = 1 to 7 step 1
+      13@ -= 1
+      if 13@ >= 7
+      then
+       13@ = 6
+      end
+      if 13@ <= 0
+      then
+       13@ = 6
+      end
+      if 13@ == 2
+      then
+       13@ = 1
+      end
+      04B8: get_char_weapon_in_slot $PLAYER_ACTOR slot 13@ store_weapon_to 26@ ammo_to 27@ model_to 31@
+         if or
+          13@ == 1
+          27@ > 0
+         then
+          if and
+           13@ == 1
+           0AB0:  key_pressed 8@
+          then
+           continue
+          end
+          0A96: 15@ = actor $PLAYER_ACTOR struct
+          0AA6: call_method 0x5E6280 struct 15@ params 1 pop 0 26@
+          break
+         end    
+      end // for
+      
+         while true
+         wait 0
+             if
+              80E1: not  player 0 pressed_key 7 // ~k~~VEHICLE_LOOKRIGHT~ 
+             then
+              break
+             end
+         end
+  end
+ end
+end
+return
