@@ -1,0 +1,56 @@
+{$CLEO .cs}
+0000:
+
+const
+GUIDE                 = 20 //Guide
+end
+
+while true
+wait 0 
+    if and
+     $ONMISSION == 0 
+     80DF:  not actor $PLAYER_ACTOR driving 
+     8603: not is_camera_in_widescreen_mode
+    then
+       if or
+        0AB0:  key_pressed 116 //F5
+        00E1:   player 0 pressed_button GUIDE 
+       then
+        while 0AB0:  key_pressed 116 //F5
+         wait 0
+        end
+        while 00E1:   player 0 pressed_button GUIDE 
+         wait 0
+        end
+        05E5: 15@ = game_version
+            if 
+             15@ == 0
+            then
+             0A8C: write_memory 0x591F10 size 5 value 0x90 virtual_protect 1
+             0AA5: call 0x591EC0 num_params 1 pop 0 0
+             0A8C: write_memory 0x591F10 size 1 value 0xE8 virtual_protect 1  
+             0606: set_memory_offset memory_pointer 0x591F11 memory_to_point 0x00591AE0 virtual_protect 1
+            else
+             if
+              15@ == 1
+             then
+              0A8C: write_memory 0x5921C0 size 5 value 0x90 virtual_protect 1
+              0AA5: call 0x58FBC0 num_params 1 pop 0 0
+              0A8C: write_memory 0x5921C0 size 1 value 0xE8 virtual_protect 1  
+              0606: set_memory_offset memory_pointer 0x5921C1 memory_to_point 0x00591D90 virtual_protect 1
+             else
+              if
+               15@ == 2
+              then
+               0A8C: write_memory 0x5920B0 size 5 value 0x90 virtual_protect 1
+               0AA5: call 0x58FAB0 num_params 1 pop 0 0
+               0A8C: write_memory 0x5920B0 size 1 value 0xE8 virtual_protect 1  
+               0606: set_memory_offset memory_pointer 0x5920B1 memory_to_point 0x00591C80 virtual_protect 1
+              end
+             end 
+            end
+        0ACA: show_text_box "Game saved."
+        wait 500
+       end
+    end
+end
