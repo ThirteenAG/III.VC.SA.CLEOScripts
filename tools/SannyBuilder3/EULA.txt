@@ -1,0 +1,23 @@
+Sanny Builder Freeware/Donationware License Agreement
+-------------------------------------------------------------------------------
+
+By installing, copying, or otherwise using Sanny Builder, you agree to be bounded by the terms of this license agreement. If you do not agree to the terms of this license agreement, do not install or use Sanny Builder. 
+
+1. This software is provided on an "AS IS" basis, without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. In no event shall any copyright holder/author/developer be liable to you for damages, including any general, special, incidental or consequential damages arising out of the use or inability to use the software including but not limited to loss of data, failure of the software to operate with any other programs or software, even if copyright holder/author/developer has been advised of the possibility of such damages.
+
+2. You may not rent, lease, lend or sell Sanny Builder in any way.
+
+3. You may distribute Sanny Builder or make it available for distribution over the internet or any other distributable medium only with this license agreement included.
+
+4. You can not change the terms of this license agreement.
+
+By installing and/or using Sanny Builder you are automatically agreeing to and show that you have read and understood the terms and conditions contained within this license agreement. This license agreement is then effective while you install, use and continue to make use of Sanny Builder. If you do not agree with this license agreement you must not install or use Sanny Builder - this license agreement will then not apply to you. This license agreement is subject to change without notice.
+
+Sanny Builder is free, however if you do enjoy it, please consider a small donation to the developer for his time and efforts to make this software possible.
+
+If you have any questions regarding this license agreement, please contact mail@sannybuilder.com
+
+-------------------------------------------------------------------------------
+Copyright (c) 2005-2013, Seemann 
+All rights reserved.
+http://sannybuilder.com

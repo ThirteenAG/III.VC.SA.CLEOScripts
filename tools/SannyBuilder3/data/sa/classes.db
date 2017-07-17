@@ -1,0 +1,296 @@
+; -------------------------------------------
+;
+;	GTA-SA SCRIPT CLASSES
+;
+; -------------------------------------------
+; DO NOT delete keywords marked with #, $
+; -------------------------------------------
+
+
+#CLASSESLIST
+Actor
+Camera
+Car
+Model
+Player
+Object
+Marker
+Pickup
+Garage
+
+; CLEO 4 classes by Alien
+File
+Audiostream
+; ------------------------------------------
+;
+; keywords $BEGIN, $END should be anyway
+;
+; ------------------------------------------
+;
+; Methods syntax reference:
+;
+; Name, OpCode, Type*, HelpCode**, ("Hint")
+;
+; ------------------------------------------
+;
+; Properties syntax reference:
+;
+; ^Name,[prop1],[prop2]...[propN], ("Hint")
+;
+; [prop]: [OpCode, MathCode, Pos***, Type*, HelpCode**]
+;
+; ------------------------------------------
+;
+; * types: 
+;  0: Regular
+;  1: Conditional
+;  2: Property
+;	player.canmove($player) = true
+;	player.canmove($player, true)
+;
+; ** Help Code 
+;  0 by default
+;  -2 for deprecated items (used only for compilation of old sources)
+;
+; *** Pos:
+;
+; 1 - left (player.money += 1)
+; 2 - right ($var = player.money)
+;
+; ------------------------------------------
+;
+; Params data types:
+; %h - Handle
+; %v - variable length string (LongString)
+; %b - Boolean
+; %s - fixed length string (ShortString)
+; %f - Float
+; %i - Integer
+;
+; ------------------------------------------
+
+#CLASSES
+
+$Actor
+$BEGIN
+; properties
+^Health,[0223,=,1,0,0],[0226,=,2,0,0],("Actor%h")
+^EmulateFromPlayer,[01f5,=,2,2,0],("Player Actor%h" "Player%h")
+^MissionCar,[00d9,=,2,0,0],("Actor%h")
+^Create,[009a,=,2,2,0],("Actor%h" "PedType:^Player1^Player2^Player3^Player4^CivMale^CivFemale^Cop^Gang1^Gang2^Gang3^Gang4^Gang5^Gang6^Gang7^Gang8^Gang9^Gang10^Dealer^Medic^Fireman^Criminal^ ^Prostitute^Special^Mission1^Mission2^Mission3^Mission4^Mission5^Mission6^Mission7^Mission8" "ModelID%i" "X%f" "Y%f" "Z%f")
+^CreateAsDriver,[0129,=,2,2,0],("Actor%h" "PedType:^Player1^Player2^Player3^Player4^CivMale^CivFemale^Cop^Gang1^Gang2^Gang3^Gang4^Gang5^Gang6^Gang7^Gang8^Gang9^Gang10^Dealer^Medic^Fireman^Criminal^Prostitute^Special^Mission1^Mission2^Mission3^Mission4^Mission5^Mission6^Mission7^Mission8" "ModelID%i" "Car%h")
+^CreateAsPassenger,[01c8,=,2,2,0],("Actor%h" "PedType:^Player1^Player2^Player3^Player4^CivMale^CivFemale^Cop^Gang1^Gang2^Gang3^Gang4^Gang5^Gang6^Gang7^Gang8^Gang9^Gang10^Dealer^Medic^Fireman^Criminal^Prostitute^Special^Mission1^Mission2^Mission3^Mission4^Mission5^Mission6^Mission7^Mission8" "ModelID%i" "Car%h" "Seat%i")
+^Angle,[0172,=,2,0,0],[0173,=,1,0,0],("Actor%h")
+^LockInCurrentPosition,[04d7,=,1,2,0],("Actor%h" "%b")
+^WeaponAccuracy,[02e2,=,1,0,0],("Actor%h")
+^CurrentCar,[03c0,=,2,0,0],("Actor%h")
+
+; procs
+PutAt,00a1,0,0,("Actor%h" "X%f" "Y%f" "Z%f")
+StorePos,00A0,0,0,("Actor%h" "X: Variable" "Y: Variable" "Z: Variable")
+StoreDeadActorPos,04a5,0,0,("Actor%h" "X: Variable" "Y: Variable" "Z: Variable")
+DestroyInstantly,009b,0,0,("Actor%h")
+DestroyWithFade,034f,0,0,("Actor%h")
+SetCarWeapon,0114,0,0,("Actor%h" "Weapon%i" "Ammo%i")
+RemoveReferences,01c2,0,0,("Actor%h")
+SetImmunities,02ab,0,0,("Actor%h" "P2%i" "P3%i" "P4%i" "P5%i" "P6%i")
+RemoveFromMissionCleanupList,01c5,0,0,("Actor%h")
+SetMaxHealth,08af,0,0,("Actor%h")
+SetWeaponAmmo,017b,0,0,("Actor%h"  "WeaponNumber:^Pistol=22^Silenced=23^DesertEagle=24^Shotgun=25^Sawnoff=26^CombatShotgun=27^MicroUzi=28^MP5=29^Tec9=32^AK47=30^M4=31^Rifle=33^SniperRifle=34^RPG=35^HeatSeek=36^FlameThrower=37^Minigun=38^Camera=43^Grenede=16^TearGas=17^Molotov=18^SachetCharges=39" "Ammo%i")
+GiveWeaponAndAmmo,01b2,0,0,("Actor%h" "WeaponNumber:^Unarmed^BrassKnuckles^GolfClub^NightStick^Knife^BaseballBat^Shovel^PoolCue^Katana^Chainsaw^PurpleDildo^WhiteDildo^LongWhiteDildo^WhiteDildo2^Flowers^Cane^Grenades^TearGas^Molotov^Pistol=22^Silenced^DesertEagle^Shotgun^Sawnoff^CombatShotgun^MicroUzi^MP5^AK47^M4^Tec9^Rifle^SniperRifle^RPG^HeatSeek^FlameThrower^Minigun^SachetCharges^Detonator^SprayPaint^FireExtinguisher^Camera^NightvisionGoggles^ThermalGoggles^Parachute" "Ammo%i")
+SetWalkStyle,0245,0,0,("Actor%h" "Style%v")
+SetImmunities,02ab,0,0,("Actor%h" "Bullets%b" "Fire%b" "Explosion%b" "Collision%b" "Melee%b")
+AddArmour,035f,0,0,("Actor%h" "Armour%i")
+
+; conditions
+InCar,00db,1,0,("Actor%h" "Car%h")
+Driving,00df,1,0,("Actor%h")
+DrivingVehicleType,00dd,1,0,("Actor%h" "ModelID%i")
+DrivingTaxiVehicle,0602,1,0,("Actor%h")
+DrivingPoliceVehicle,056c,1,0,("Actor%h")
+DrivingPlane,04ab,1,0,("Actor%h")
+Dead,0118,1,0,("Actor%h")
+HasWeapon,0491,1,0,("Actor%h" "WeaponID%i")
+Stopped,02a0,1,0,("Actor%h")
+^Model,[02f2,==,1,1,0],("Actor%h")
+^Animation,[0611,==,1,1,0],("Actor%h")
+
+; deprecated
+^Armour,[035f,=,1,0,-2],("Actor%h")
+^Car,[00d9,=,2,0,-2],("Actor%h")
+
+$END
+
+$Camera
+$BEGIN
+SetBehindPlayer,0373,0,0
+SetAtPos,03CB,0,0,("X%f" "Y%f" "Z%f")
+SetPosition,015f,0,0,("X%f" "Y%f" "Z%f" "%f" "%f" "%f")
+Restore,015a,0,0
+Restore_WithJumpCut,02eb,0,0
+Shake,0003,0,0,("Duration%i")
+PointAt,0160,0,0,("X%f" "Y%f" "Z%f" "P%i")
+OnVehicle,0158,0,0,("Car%h" "P2%i" "P3%i")
+OnPed,0159,0,0,("Actor%h" "P2%i" "P3%i")
+$END
+
+$Car
+$BEGIN
+; properties
+^ToggleTaxiLight,[0216,=,1,2,0],("Car%h" "%b")
+^Create,[00a5,=,2,2,0],("Car%h" "ModelID%i" "X%f" "Y%f" "Z%f")
+^Id,[0137,==,1,1,0],("Car%h")
+^Angle,[0174,=,2,0,0],[0175,=,1,0,0],("Car%h")
+^Health,[0224,=,1,0,0],[0227,=,2,0,0],("Car%h")
+^LockInCurrentPosition,[0519,=,1,2,0],("Car%h" "%b")
+^ImmuneToNonPlayer,[02aa,=,1,2,0],("Car%h" "%b")
+^DoorStatus,[020a,=,1,2,0],("Car%h" "%i")
+^ToggleHydraulics,[07ff,=,1,2,0],("Car%h" "%b")
+^Model,[0137,==,1,1,0],[0441,=,2,0,0],("Car%h")
+
+; procs
+Destroy,00a6,0,0,("Car%h")
+DriveTo,00a7,0,0,("Car%h" "X%f" "Y%f" "Z%f")
+SetToPsychoDriver,00a8,0,0,("Car%h")
+SetToNormalDriver,00a9,0,0,("Car%h")
+StorePos,00aa,0,0,("Car%h" "X: Variable" "Y: Variable" "Z: Variable")
+PutAt,00ab,0,0,("Car%h" "X%f" "Y%f" "Z%f")
+SetMaxSpeed,00ad,0,0,("Car%h" "MaxSpeed%f")
+SetDriverBehaviour,00af,0,0,("Car%h" "Behaviour:^Nowhere^FollowRoad^KillThePlayer^DriveToPlayer=4^IgnoreRoadPaths=8"
+SetImmunities,02ac,0,0,("Car%h" "Bullets%b" "Fire%b" "Explosion%b" "Collision%b" "Melee%b")
+RemoveReferences,01c3,0,0,("Car%h")
+SetAnimation,0477,0,0,("Car%h" "Animation%i" "Duration%i")
+SetSpeedInstantly,04ba,0,0,("Car%h" "Speed%f")
+
+; conditions
+Wrecked,0119,1,0,("Car%h")
+HasHydraulics,0803,1,0,("Car%h")
+$END
+
+$Model
+$BEGIN
+Load,0247,0,0,("ModelID%i")
+Available,0248,1,0,("ModelID%i")
+Destroy,0249,0,0,("ModelID%i")
+$END
+
+$pickup
+$begin
+^Create,[0213,=,2,2,0],("Pickup%h" "ModelID%i" "Type%i" "X%f" "Y%f" "Z%f")
+Picked_up,0214,1,0,("Pickup%h")
+Destroy,0215,0,0,("Pickup%h")
+$end
+
+$Object
+$begin
+^Create,[0107,=,2,2,0],("Object%h" "ModelID%i" "X%f" "Y%f" "Z%f")
+^Init,[029b,=,2,2,0],("Object%h" "ModelID%i" "X%f" "Y%f" "Z%f")
+^Angle,[0176,=,2,0,0],[0177,=,1,0,0],("Object%h")
+^Indestructibility,[07f7,=,1,2,0],("Object%h" "%b")
+^KeepInMemory,[0550,=,1,2,0],("Object%h" "%b")
+^ToggleInMovingList,[0392,=,1,2,0],("Object%h" "%b")
+^CollisionDetection,[0382,=,1,2,0],("Object%h" "%b")
+^Model,[09cc,==,1,1,0],[0984,=,2,0,0],("Object%h")
+
+PutAt,01bc,0,0,("Object%h" "X%f" "Y%f" "Z%f")
+Throw,0381,0,0,("Object%h" "X%f" "Y%f" "Z%f")
+Destroy,0108,0,0,("Object%h")
+RemoveFromMissionCleanupList,01c7,0,0,("Object%h")
+SetImmunities,09ca,0,0,("Object%h" "Bullets%b" "Fire%b" "Explosion%b" "Collision%b" "Melee%b")
+StorePos,01bb,0,0,("Object%h" "X: Variable" "Y: Variable" "Z: Variable")
+RemoveReferences,01c4,0,0,("Object%h")
+$end
+
+$marker
+$begin
+^CreateAboveCar,[0186,=,2,2,0],("Marker%h" "Car%h")
+^CreateAboveActor,[0187,=,2,2,0],("Marker%h" "Actor%h")
+^CreateAboveObject,[0188,=,2,2,0],("Marker%h" "Object%h")
+^CreateIconAndSphere,[02a7,=,2,2,0],("Marker%h" "Icon%i" "X%f" "Y%f" "Z%f")
+^CreateIconWithoutSphere,[04ce,=,2,2,0],("Marker%h" "Icon%i" "X%f" "Y%f" "Z%f")
+TieToCar,0161,0,0,("Marker%h" "Car%h" "P3%i" "P4%i")
+Disable,0164,0,0,("Marker%h")
+SetColor,0165,0,0,("Marker%h", "Color%i")
+SetIconSize,0168,0,0,("Marker%h", "Size%i")
+$end
+
+$Player
+$BEGIN
+; properties
+^Money,[0109,+=,1,0,0],[010A,>,1,1,0],[010B,=,2,0,0],("Player%h")
+^WantedLevel,[010d,=,1,0,0],[01c0,=,2,0,0],[010f,>,1,1,0],("Player%h")
+^InfiniteRun,[0330,=,1,2,0],("Player%h" "%b")
+^CanMove,[01B4,=,1,2,0],("Player%h" "%b")
+^Create,[0053,=,2,2,0],("Player%h" "ModelID%i" "X%f" "Y%f" "Z%f")
+^RC_car,[0484,=,2,0,0],("Player%h")
+^SprintMode,[06af,=,1,2,0],("Player%h" "%b")
+
+; procs
+SetClothes,087B,0,0,("Player%h" "Texture%v" "Model%v" "BodyPart: ^Torso^Head^Legs^Shoes^Special=17")
+SetMinWantedLevel,010e,0,0,("Player%h" "Level%i")
+ClearWantedLevel,0110,0,0,("Player%h")
+MakeSafe,03ef,0,0,("Player%h")
+Build,070d,0,0,("Player%h")
+SetHandlingResponsiveness,03fd,0,0,("Player%h" "P2%i")
+SetDrunkVisuals,052c,0,0,("Player%h" "P2%i")
+
+; conditions
+Defined,0256,1,0,("Player%h")
+Controllable,03ee,1,0,("Player%h")
+Wasted,0117,1,0,("Player%h")
+PressingHorn,0122,1,0,("Player%h")
+InZone,0583,1,0,("Player%h" "Zone%s")
+InRemoteMode,0241,1,0,("Player%h")
+$END
+
+$garage
+$begin
+
+;procs
+Activate,0299,0,0,("GarageID%s")
+Deactivate,02b9,0,0,("GarageID%s")
+ChangeType,02fa,0,0,("GarageID%s" "NewType%i")
+Open,0360,0,0,("GarageID%s")
+Close,0361,0,0,("GarageID%s")
+SetToAcceptCar,021b,0,0,("GarageID%s" "Car ModelID%i")
+
+; conditions
+IsOpen,03b0,1,0,("GarageID%s")
+IsClosed,03b1,1,0,("GarageID%s")
+
+$end
+
+; ---------- CLEO 4 Classes ----------
+$File
+$begin
+^Open,[0A9A,=,2,0,0],("FileName%v" "Mode: ^NULL=0")
+;;Open,0A9A,0,0,("FileHandle%h" "FileName: ^NULL=0" "Mode: ^NULL=0")
+Close,0A9B,0,0,("FileHandle%h")
+^Size,[0A9C,=,2,0,0],("FileHandle%h")
+Read,0A9D,0,0,("FileHandle%h" "Size%i" "Destination%i")
+Write,0A9E,0,0,("FileHandle%h" "Size%i" "Source%i")
+Seek,0AD5,0,0,("FileHandle%h" "Offset%i" "Origin: ^SEEK_SET^SEEK_CUR^SEEK_END")
+EOF,0AD6,1,0,("FileHandle%h")
+ReadString,0AD7,0,0,("FileHandle%h" "Destination: ^NULL=0" "BufSize%i")
+WriteString,0AD8,0,0,("FileHandle%h" "Source: ^NULL=0")
+$end
+
+$Audiostream
+$begin
+;;Load,0AAC,0,0,("Handle%h" "FileName: ^NULL=0")
+;;Load3D,0AC1,0,0,("Handle%h" "FileName: ^NULL=0")
+^Load,[0AAC,=,2,0,0],("FileName%v")
+^Load3D,[0AC1,=,2,0,0],("FileName%v")
+PerformAction,0AAD,0,0,("Handle%h" "Action: ^STOP^PLAY^PAUSE^RESUME")
+Release,0AAE,0,0,("Handle%h")
+^Length,[0AAF,=,2,0,0],("Handle%h")
+^State,[0AB9,=,2,0,0],("Handle%h")
+^Volume,[0ABB,=,2,0,0],[0ABC,=,1,0,0],("Handle%h")
+Loop,0AC0,0,0,("Handle%h" "Flag%i")
+SetPosition,0AC2,0,0,("Handle%h" "X%f" "Y%f" "Z%f")
+LinkToActor,0AC4,0,0,("Handle%h" "Actor%h")
+LinkToObject,0AC3,0,0,("Handle%h" "Object%h")
+LinkToCar,0AC5,0,0,("Handle%h" "Car%h")
+$end
+
+#EOF

@@ -1,0 +1,13 @@
+_ass1 = SCM files association
+_ass2 = Wish to associate .scm files with Sanny Builder 3?
+_ass3 = Check this box if you wish to associate .scm file extension with Sanny Builder 3
+_ass4 = Associate .SCM files with Sanny Builder 3?
+
+_dir1 = Game directory location
+_dir2 = Where the game is installed?
+_dir3 = Locate your game directory (either GTA 3, Vice City or San Andreas).%n Leave it blank if the game does not installed.%n If you locate the game directory, you will be able to install the CLEO library
+
+_cleo1 = The CLEO Library Installation
+_cleo2 = Should the CLEO library be installed?
+_cleo3 = Check this box if you wish to install the CLEO library
+_cleo4 = Install the CLEO library?

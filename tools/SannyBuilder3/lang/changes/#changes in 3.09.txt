@@ -1,0 +1,23 @@
+[CommandsDataModule]
+00000001=Text file (*.txt)|*.txt|Compiled Scripts (*.scm; *.cs; *.cm)|*.scm; *.cs; *.cm|All files (*.*)|*
+00000088=Text file (*.txt)|*.txt|Rich Text Format (*.rtf)|*.rtf|HTML File (*.htm; *.html)|*.htm; *.html|Any file (*.*)|*
+00000137=Report bug...
+00000138=Report bug via the official bug tracker
+00000140=Check for update...
+
+[FAbout]
+00000005=version %s
+
+[FCLEOINSTALL]
+00000005=CLEO version
+
+[$CONSTANTS]
+OST_MSG=Found: %d
+UPD_MSG1=Checking for update...
+UPD_MSG2=There is no update available at this time.
+UPD_MSG3=A new version is found! Press Update button to download and install it.
+UPD_MSG4=Cannot contact the server to check if an update exists. Please, ensure to be connected to the Internet and then retry.
+UPD_MSG5=An error occured trying to download an update file. Retry later.
+UPD_MSG6=Update
+UPD_MSG7=Retry
+UPD_MSG8=Close

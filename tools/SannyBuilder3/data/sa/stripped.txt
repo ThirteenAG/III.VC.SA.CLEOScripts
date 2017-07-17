@@ -1,0 +1,57 @@
+{
+  use macro (Ctrl+J) "headsa"
+  to insert a file header      
+}
+{$VERSION 3.0.0000}
+var
+ $PLAYER_CHAR: Player
+end // var 
+03A4: name_thread 'MAIN' 
+01F0: set_max_wanted_level_to 6 
+0111: toggle_wasted_busted_check 0 
+00C0: set_current_time_hours_to 8 minutes_to 0 
+04E4: unknown_refresh_game_renderer_at 2488.56 -1666.84 
+03CB: set_rendering_origin_at 2488.56 -1666.84 13.38 
+0053: $PLAYER_CHAR = create_player #NULL at 2488.56 -1666.84 13.38 
+01F5: $PLAYER_ACTOR = create_player_actor $PLAYER_CHAR 
+07AF: $PLAYER_GROUP = player $PLAYER_CHAR group 
+0373: set_camera_directly_behind_player 
+01B6: set_weather 0 
+0001: wait 0 ms 
+087B: set_player $PLAYER_CHAR clothes_texture "PLAYER_FACE" model "HEAD" body_part 1 
+087B: set_player $PLAYER_CHAR clothes_texture "JEANSDENIM" model "JEANS" body_part 2 
+087B: set_player $PLAYER_CHAR clothes_texture "SNEAKERBINCBLK" model "SNEAKER" body_part 3 
+087B: set_player $PLAYER_CHAR clothes_texture "VEST" model "VEST" body_part 0 
+070D: rebuild_player $PLAYER_CHAR 
+01B4: toggle_player $PLAYER_CHAR can_move 1 
+016A: fade 1 time 0 
+04BB: select_interior 0 
+0629: change_integer_stat 181 to 4 
+016C: restart_if_wasted_at 2027.77 -1420.52 15.99 angle 137.0 town_number 0 
+016D: restart_if_busted_at 1550.68 -1675.49 14.51 angle 90.0 town_number 0 
+0180: set_on_mission_flag_to $ONMISSION // Note: your missions have to use the variable defined here 
+0004: $DEFAULT_WAIT_TIME = 250
+03E6: remove_text_box 
+
+// put your create_thread commands here
+
+
+
+:MAIN_LOOP
+0001: wait $DEFAULT_WAIT_TIME ms
+00BF: $TIME_HOURS = current_time_hours, $TIME_MINS = current_time_minutes
+0002: jump @MAIN_LOOP 
+
+
+// put your mods (threads) here
+
+
+//-------------Mission 0---------------
+// put your missions here
+
+
+
+//-------------External script 0---------------
+// put your external scripts here
+
+

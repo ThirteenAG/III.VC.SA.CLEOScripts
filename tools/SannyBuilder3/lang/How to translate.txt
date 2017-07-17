@@ -1,0 +1,30 @@
+
+	 TRANSLATION FROM THE GROUND UP
+
+ *********************************************** 
+
+1. Copy one of the existing translation files. The english translation is always the most updated.
+2. Rename it. It is desirable to give a name of the language to it (for example german.ini, french.ini, etc).
+3. The main thing is to assign a correct value of the language ID. In translation files this value is set in the line LANGID=X, where X is the ID of a language (in the decimal format). To find out exact value visit this web-page: http://msdn.microsoft.com/en-us/goglobal/bb964664
+4. Edit the texts of translation. DO NOT edit the line identifiers and section names.
+5. Save changes. The translation will be accessible in the SB options with the name that you assigned through the ID.
+6. Since v3.0, there's a installer as you may see already. You may translate part of its messages in your language as well. The messages to translate can be found in the file install.txt in this folder. Nothing special is required, just translate each line.
+
+If you made a new translation, please send it to mail@sannybuilder.com
+
+Also translating of the help file (help.chm) is welcome.
+
+
+	ПЕРЕВОД С НУЛЯ
+
+***********************************************
+
+1. Скопируйте один из уже существующих файлов с переводом (english.ini, russian.ini)
+2. Переименуйте его. Желательно дать файлу имя языка перевода (например german.ini, french.ini, albanian.ini)
+3. Самое главное - это задать правильное значение ID языка. В файлах перевода это значение устанавливается в строке LANGID=X, где X - ID одного из мировых языков (в десятичном формате). Узнать правильное значение можно на странице Microsoft: http://msdn.microsoft.com/en-us/goglobal/bb964664
+4. Отредактируйте тексты перевода. Идентификаторы слева, а также имена разделов в квадратных скобках трогать не надо.
+5. Сохраните изменения. Перевод будет доступен в опциях SB под именем, который вы дали ему через ID.
+6. В версии 3.0 присутствует инсталлятор. Вы также можете перевести некоторые сообщения инсталлятора на свой язык. Список сообщений для перевода можно найти в файле install.txt в этой папке. Ничего особого не требуется, просто переведите каждую строку. 
+
+Если вы перевели Sanny Builder на свой родной язык, 
+пожалуйста вышлите мне перевод на e-mail mail@sannybuilder.com

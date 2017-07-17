@@ -1,0 +1,11 @@
+{$CLEO}
+0000:
+05E5: 0@ = game_version
+if
+0@ == 0
+then
+0A8C: write_memory 0x5FA178 size 1 value 0x00 virtual_protect 1 
+else
+0A8C: write_memory 0x5FA197 size 1 value 0x00 virtual_protect 1 
+end
+0A93: end_custom_thread

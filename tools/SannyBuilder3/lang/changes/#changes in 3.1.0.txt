@@ -1,0 +1,27 @@
+[CommandsDataModule]
+00000099=IMG file (*.img)|*.img
+00000128=Opcodes INI (*.ini)|*.ini
+
+[FOptions]
+00000177=Hotkeys
+
+[frmUpdater]
+00000009=Automatically check for updates at startup
+
+[FREPORT]
+00000001=Report
+
+[$CONSTANTS]
+MSG_0026=Run GTA LCS
+MSG_0027=GTA LCS Directory
+MSG_0028=Run GTA VCS
+MSG_0029=GTA VCS Directory
+MSG_0030=This script contains its original source code.\nUse it (Yes) or decompile the file anyway (No)?
+ERR_0085=This file was compiled for %s. Change the current edit mode and retry the decompiling process?
+HK_ConvertModel=Convert number
+HK_ConvertNumber=Convert model name
+HK_Misc=Miscellaneous
+REP_0=Maximum: %d b
+REP_1=MAIN size: %d b
+REP_2=Largest mission: %d b
+REP_3=Largest script: %d b

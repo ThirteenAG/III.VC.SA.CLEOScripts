@@ -1,0 +1,35 @@
+// complete by Demarest
+DEFINE OBJECTS 3
+DEFINE OBJECT (noname)                
+DEFINE OBJECT INDHELIX_BARRIER         // Object number -1
+DEFINE OBJECT LOD_LAND014              // Object number -2
+
+DEFINE MISSIONS 0
+
+{$VERSION 1.1.0000}
+
+//-------------MAIN---------------
+03A4: name_thread 'MAIN' 
+01F0: set_max_wanted_level_to 6 
+0111: set_wasted_busted_check_to 0 
+00C0: set_current_time 12 0 
+03F7: load_island_data 0 
+0053: $PLAYER_CHAR = create_player #NULL at 811.875 -939.9374 35.75 
+0171: set_player $PLAYER_CHAR z_angle_to 180.0 
+01F5: $PLAYER_ACTOR = create_emulated_actor_from_player $PLAYER_CHAR 
+0373: set_camera_directly_behind_player 
+0363: toggle_model_render_at 1027.25 -933.7499 15.0 radius 50.0 object #INDHELIX_BARRIER 0 
+03B6: replace_model_at 1027.25 -933.7499 15.0 radius 50.0 from #INDHELIX_BARRIER to #LOD_LAND014 
+01B6: set_weather 0 
+034B: staunton_complete 
+0352: set_actor $PLAYER_ACTOR skin_to 'PLAYER' 
+0353: refresh_actor $PLAYER_ACTOR 
+016A: fade 1 1000 ms 
+01B4: set_player $PLAYER_CHAR frozen_state 1 
+01B7: release_weather 
+0109: player $PLAYER_CHAR money += $PLAYER_CHAR 
+0054: store_player $PLAYER_CHAR position_to $var1 $var2 $var3
+ 
+:MAIN_138
+0001: wait 250 ms 
+0002: jump @MAIN_138 

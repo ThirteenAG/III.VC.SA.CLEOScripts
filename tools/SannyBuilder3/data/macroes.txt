@@ -1,0 +1,90 @@
+var=variables declaration
+=var
+= |
+=end // var
+
+hex=direct HEX input
+=hex
+= |
+=end // hex
+
+load=model request and load
+=#|.Load
+=
+=while not #.Available
+= wait 0
+=end
+
+headsa=file header (SA)
+=DEFINE MISSIONS 0
+=//DEFINE MISSION {ID} 0 AT {LABEL} @
+=DEFINE EXTERNAL_SCRIPTS 0 // Use -1 in order not to compile AAA script
+=//DEFINE SCRIPT {NAME}  AT {LABEL} @
+=DEFINE UNKNOWN_EMPTY_SEGMENT 0
+=DEFINE UNKNOWN_THREADS_MEMORY 0
+=|
+
+headvc=file header (VC, GTA3)
+=DEFINE MISSIONS 0
+=|
+
+def=check if player is defined
+=if 
+=  Player.Defined($PLAYER_CHAR)
+=then
+=  
+=end
+
+if=single condition
+=if
+=
+=else_jump @|
+
+and=2 and more operands (AND)
+=if and
+=
+=
+=else_jump @|
+
+or=2 and more operands (OR)
+=if or
+=
+=
+=else_jump @|
+
+then=IF..THEN..END
+=if
+=  |
+=then
+=
+=end // if
+
+else=IF..THEN..ELSE..END
+=if
+=  |
+=then
+=
+=else
+=
+=end // if
+
+
+for=FOR statement
+=for | =  to  // step 1
+=
+=end // for
+
+while=WHILE statement
+=while |
+=
+=end // while
+
+repeat=REPEAT statement
+=repeat
+=
+=until | // repeat
+
+const=constants declaration
+=const
+= |
+=end // const
