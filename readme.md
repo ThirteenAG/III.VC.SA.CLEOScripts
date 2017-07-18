@@ -13,4 +13,7 @@ So, even if you don’t have a gamepad, you need to install GInput anyway to use
 To install scripts simple put .cs file in CLEO folder. 
 If there's a zip archive on release page, then the script requires additional files, copy the content of that archive to GTA root directory.
 
+# Downloads are available on [releases page](https://github.com/ThirteenAG/III.VC.SA.CLEOScripts/releases).
+## Alternatively you can find a [list of compiled scripts on AppVeyor](https://ci.appveyor.com/project/ThirteenAG/iii-vc-sa-cleoscripts/build/artifacts).
+
 [Visit CLEO topic on gtaforums.com to report bugs or suggestions.](http://gtaforums.com/topic/807185-cleo-20/)
