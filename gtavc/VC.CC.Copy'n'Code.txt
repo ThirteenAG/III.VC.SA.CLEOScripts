@@ -1,0 +1,116 @@
+{$CLEO}
+{$OPCODE 0B20=2,read_clipboard_data %1d% size %2d%}
+{$OPCODE 0B21=2,write_clipboard_data %1d% size %2d%}
+
+:ClipboardControl
+// 0@ - @Clipboard_Data Pointer
+// 1@ - Is Ctrl+C down
+// 2@ - Is Ctrl+V down
+// 3@ - Does @Clipboard_Data have data 
+
+0AC6: 0@ = label @Clipboard_Data offset
+
+WHILE TRUE
+    WAIT 0
+    
+    // Wait for the user to request some information.
+    
+    IF 0ADC: TEST_CHEAT "GETCHARSTRUCT"
+    THEN
+        0A96: 4@ = actor $PLAYER_ACTOR struct
+        0AD3: 0@ = format "0x%X" 4@
+    END
+    IF 0ADC: TEST_CHEAT "GETCARSTRUCT"
+    THEN
+        IF 00DF: IS_ACTOR_DRIVING $PLAYER_ACTOR
+        THEN
+            03C0: 4@ = actor $PLAYER_ACTOR car
+            0A97: 5@ = car 4@ struct
+            0AD3: 0@ = format "0x%X" 5@
+        END
+    END
+    IF 0ADC: TEST_CHEAT "GETPLAYERPOS"
+    THEN
+        00A0: store_actor $PLAYER_ACTOR position_to 4@ 5@ 6@
+        0AD3: 0@ = format "%g %g %g" 4@ 5@ 6@
+    END
+    IF 0ADC: TEST_CHEAT "GETPLAYERANGLE"
+    THEN
+        0172: 4@ = actor $PLAYER_ACTOR Z_angle
+        0AD3: 0@ = format "%g" 4@
+    END
+    IF 0ADC: TEST_CHEAT "GETPLAYERINTID"
+    THEN
+        09E8: 4@ = actor $PLAYER_ACTOR active_interior
+        0AD3: 0@ = format "%d" 4@
+    END
+    IF 0ADC: TEST_CHEAT "GETPLAYERINTNAME"
+    THEN
+        094B: 4@v = get_active_interior_name_from_actor $PLAYER_ACTOR
+        0AD3: 0@ = format "%s" 4@v
+    END
+    IF 0ADC: TEST_CHEAT "GETCAMERAPOS"
+    THEN
+        068D: get_camera_position_to 4@ 5@ 6@
+        0AD3: 0@ = format "%g %g %g" 4@ 5@ 6@
+    END
+    IF 0ADC: TEST_CHEAT "GETCAMERATAR"
+    THEN
+        068E: get_camera_target_point_to 4@ 5@ 6@
+        0AD3: 0@ = format "%g %g %g" 4@ 5@ 6@
+    END
+    IF 0ADC: TEST_CHEAT "GETACTIVEINT"
+    THEN
+        077E: get_active_interior_to 4@
+        0AD3: 0@ = format "%d" 4@
+    END
+    IF 0ADC: TEST_CHEAT "GETHELI"
+    THEN
+        0ADD: spawn_car_with_model #HUNTER like_a_cheat
+        0AD3: 0@ = format "%d" 4@
+    END    
+    
+    
+    // Check if any output exists.
+    0A8D: 3@ = read_memory 0@ size 1 virtual_protect 0
+    
+    IF NOT 3@ == 0
+    THEN
+        // Display the output.
+        0ACD: show_text_highpriority 0@ time 1
+        
+        IF AND
+            0AB0: KEY_PRESSED 0x11        // Ctrl
+            0AB0: KEY_PRESSED 0x43        // C
+        THEN
+            IF 1@ == 0
+            THEN
+                // Copy the output to the clipboard.
+                0B21: write_clipboard_data_from 0@ size 64
+                1@ = 1
+            END
+        ELSE
+            1@ = 0
+        END
+    
+        // We can cut the output, to get rid of the on-screen text.
+        IF AND
+            0AB0: KEY_PRESSED 0x11        // Ctrl
+            0AB0: KEY_PRESSED 0x58        // X
+        THEN
+            IF 2@ == 0
+            THEN
+                0AD3: 0@ = format ""
+                2@ = 1
+            END
+        ELSE
+            2@ = 0
+        END
+    END
+END
+
+:Clipboard_Data   // temporary storage for 64 bytes (including trailing \0) of clipboard data
+hex
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+end

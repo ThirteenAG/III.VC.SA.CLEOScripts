@@ -1,0 +1,71 @@
+{$CLEO}
+0000:
+var
+5@:int
+6@:int
+end
+05E5: 0@ = game_version
+if
+0@ == 0
+then
+0@ = 0x53B85C
+1@ = 0x53B8B6
+6@ = 0x006004FC
+else
+0@ = 0x53BA9C
+1@ = 0x53BAF6
+6@ = 0x006002E4
+end
+
+05F5: call_scm_func @getLabelOffset 1 label @0_0750000029802322 store_to 2@
+
+while true 
+wait 0
+if
+00E0:   player $PLAYER_CHAR driving 
+then
+05E0: 5@ = read_memory 0@ size 4 virtual_protect 0
+           if or
+              00E1:   key_pressed 0 10
+              00E1:   key_pressed 0 11 
+           then
+               if
+               5@ == 6@
+               then
+              05DF: write_memory 0@ size 4 value 2@ virtual_protect 1
+              05DF: write_memory 1@ size 4 value 2@ virtual_protect 1
+               end
+           end
+           
+
+           if and
+              5@ <> 6@
+              80E1: not  key_pressed 0 10
+              80E1: not  key_pressed 0 11 
+           then
+              05DF: write_memory 0@ size 4 value 6@ virtual_protect 1
+              05DF: write_memory 1@ size 4 value 6@ virtual_protect 1
+           end
+end           
+end
+
+:getLabelOffset
+{  Example:
+    05F5: call_scm_func @getLabelOffset 1 label @lbl store_to 0@
+}
+if 
+  0@ <> 0 
+then
+  05EC: 1@ = current_thread_pointer
+  1@ += 0x98
+  05E0: 1@ = read_memory 1@ size 4 virtual_protect 0 
+  000C: 1@ -= 0@ 
+else
+  1@ = 0 
+end
+05F6: ret 1 1@
+
+:0_0750000029802322
+hex
+9A 99 99 3D
+end

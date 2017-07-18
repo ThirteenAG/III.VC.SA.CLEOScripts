@@ -1,0 +1,94 @@
+{$CLEO}
+0000:
+0390: load_txd_dictionary 'cross'
+038F: load_texture 'cross' as 50
+
+0A8D: 15@ = read_memory 0x44D65B size 4 virtual_protect 1 //_scriptTextures ptr
+0A8F: 14@ = 50 - 1 // int
+14@ *= 4
+000A: 15@ += 14@ // integer values 
+0A8D: 15@ = read_memory 15@ size 4 virtual_protect 1
+
+while true
+wait 0
+	0054: store_player $player_char position_to 0@ 1@ 2@
+	gosub @AimingCheck
+	05F5: call_scm_func @weapon_meelee_check 0 6@
+	  if and
+	   6@ == false
+	   5@ > 0
+	  then
+	     0A8C: write_memory 0x5055DB size 4 value 15@ virtual_protect 1
+	     0A8C: write_memory 0x5056B6 size 4 value 15@ virtual_protect 1
+	     0A8C: write_memory 0x505810 size 4 value 15@ virtual_protect 1
+	     0A8C: write_memory 0x5058F6 size 4 value 15@ virtual_protect 1
+	     
+	     0A8C: write_memory 0x50554D size 4 value 5@ virtual_protect 1
+	     0A8C: write_memory 0x505628 size 4 value 5@ virtual_protect 1
+	     0A8C: write_memory 0x505726 size 4 value 5@ virtual_protect 1
+	     0A8C: write_memory 0x505832 size 4 value 5@ virtual_protect 1
+	  else
+	    0A8D: 7@ = read_memory 0x50554D size 4 virtual_protect 1
+	     if
+	      7@ <> 255
+	     then
+	      0A8C: write_memory 0x5055DB size 4 value 0x95CBF0 virtual_protect 1
+	      0A8C: write_memory 0x5056B6 size 4 value 0x95CBF0 virtual_protect 1
+	      0A8C: write_memory 0x505810 size 4 value 0x95CBF0 virtual_protect 1
+	      0A8C: write_memory 0x5058F6 size 4 value 0x95CBF0 virtual_protect 1
+	      
+	      0A8C: write_memory 0x50554D size 4 value 255 virtual_protect 1
+	      0A8C: write_memory 0x505628 size 4 value 255 virtual_protect 1
+	      0A8C: write_memory 0x505726 size 4 value 255 virtual_protect 1
+	      0A8C: write_memory 0x505832 size 4 value 255 virtual_protect 1
+	     end
+	  end
+	
+	if
+		05EF: 13@ = random_actor_near_point 0@ 1@ 2@ in_radius 550.0 find_next 0 pass_deads 0 //IF and SET
+	then
+		repeat
+			05E6: 10@ = actor 13@ struct
+			10@ += 0x51E
+			05E0: 11@ = read_memory 10@ size 1 virtual_protect 1
+			if and
+			 12@ == 0
+			 11@ < 0xFF
+			 02D5:   player $PLAYER_CHAR firing_weapons_in_rectangle 0@ 1@ 0@ 1@ 0
+			then
+			 5@ = 255
+			 05DF: write_memory 10@ size 1 value 0xFF virtual_protect 1
+			end
+		until 85EF: not 13@ = random_actor_near_point 0@ 1@ 2@ in_radius 550.0 find_next 1 pass_deads 0 //IF and SET
+	end
+	
+	5@ -= 10
+	if
+	 5@ < 0
+	then
+	 5@ = 0
+	end
+
+end
+
+:AimingCheck
+05E6: 12@ = actor $PLAYER_ACTOR struct
+12@ += 0x224
+05E0: 12@ = read_memory 12@ size 1 virtual_protect 1
+if 12@ <> 0x0C
+then
+12@ = false
+else
+12@ = true
+end
+return
+
+:weapon_meelee_check
+046F: store_player $player_char currently_armed_weapon_to 2@
+if and
+2@ >= 2
+2@ <= 6
+then
+05F6: ret 1 false
+end
+05F6: ret 1 true

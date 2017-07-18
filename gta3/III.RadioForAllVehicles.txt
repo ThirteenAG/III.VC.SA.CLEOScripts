@@ -1,0 +1,27 @@
+{$CLEO .cs}
+0000:
+05E5: 15@ = game_version
+if 
+ 15@ == 0
+then
+ 0A8C: write_memory 0x42670E size 1 value 0xEB virtual_protect 1  //all cars paysnsprays
+ 0A8C: write_memory 0x57E50A size 1 value 0xEB virtual_protect 1  //all cars have radio 
+ 0A8C: write_memory 0x57E6B5 size 1 value 0xEB virtual_protect 1  //police cars have radio 
+else
+ if
+  15@ == 1
+ then
+  0A8C: write_memory 0x42670E size 1 value 0xEB virtual_protect 1  //all cars paysnsprays
+  0A8C: write_memory 0x57E85A size 1 value 0xEB virtual_protect 1  //all cars have radio 
+  0A8C: write_memory 0x57EA05 size 1 value 0xEB virtual_protect 1  //police cars have radio 
+ else
+  if
+   15@ == 2
+  then
+   0A8C: write_memory 0x42670E size 1 value 0xEB virtual_protect 1  //all cars paysnsprays
+   0A8C: write_memory 0x57E75A size 1 value 0xEB virtual_protect 1  //all cars have radio 
+   0A8C: write_memory 0x57E905 size 1 value 0xEB virtual_protect 1  //police cars have radio 
+  end
+ end 
+end
+0A93: end_custom_thread

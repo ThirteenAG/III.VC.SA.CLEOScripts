@@ -1,0 +1,4 @@
+{$CLEO}
+0000:
+0A8C: write_memory 0x69C780 size 4 value 800.0 virtual_protect 1
+0A93: end_custom_thread

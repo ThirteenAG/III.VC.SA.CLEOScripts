@@ -1,0 +1,65 @@
+{$CLEO .cs}
+0000:
+
+const
+GUIDE                 = 20 //Guide
+end
+
+while true
+wait 0 
+    if and
+     $ONMISSION == 0 
+     not Actor.Driving($PLAYER_ACTOR)
+    then
+       if or
+        0AB0:  key_pressed 116 //F5
+        00E1:   player 0 pressed_button GUIDE 
+       then
+        while 0AB0:  key_pressed 116 //F5
+         wait 0
+        end
+        while 00E1:   player 0 pressed_button GUIDE 
+         wait 0
+        end
+        0A8C: write_memory 0x618FA0 size 5 value 0x90 virtual_protect 1
+        0AA5: call 0x619060 num_params 1 pop 0 0
+        0A8C: write_memory 0x618FA0 size 1 value 0xE8 virtual_protect 1  
+        0AB1: call_scm_func @setMemOffset 3 memory 0x618FA1 pointing_to 0x004414C0 virtual_protect 1 
+        0ACA: show_text_box "Game saved."
+        wait 500
+       end
+    end
+end
+
+:getMemOffset
+{
+  Parameters:
+    Passed:
+      0@ - memory pointer
+      1@ - memory to point
+    Result:
+      1@ - memory offset
+
+  Example:
+    0AB1: call_scm_func @getMemOffset 2 memory 0x0 pointing_to 0x0 store_to 1@ 
+}
+0@ += 0x4 
+000E: 1@ -= 0@ 
+0AB2: ret 1 1@ 
+
+:setMemOffset
+{
+  Parameters:
+    Passed:
+      0@ - memory pointer
+      1@ - memory to point
+      2@ - virtual protection
+    Result:
+      none
+
+  Example:
+    0AB1: call_scm_func @setMemOffset 3 memory 0x0 pointing_to 0x0 virtual_protect 0 
+}
+0AB1: call_scm_func @getMemOffset 2 memory 0@ pointing_to 1@ store_to 3@ 
+0A8C: write_memory 0@ size 4 value 3@ virtual_protect 2@ 
+0AB2: ret 0

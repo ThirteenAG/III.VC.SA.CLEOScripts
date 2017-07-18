@@ -1,0 +1,38 @@
+{$CLEO}
+0000:    
+0006: 10@ = 0x821280
+0006: 1@ = 4        // 4 bytes per variable
+0012: 1@ *= 2821    // $2821
+005A: 10@ += 1@
+
+while true
+if
+$passed_COK2_Phnom_Penh_86 == 1
+then
+05DC: end_custom_thread
+end
+wait 2000
+05ED: 0@ = thread 'BARON2' pointer
+        if
+        0@ <> 0
+        then
+        while 9@ == 0
+        wait 0
+        05E0: 9@ = read_memory 10@ size 4 virtual_protect 1
+        end
+        0419: 12@ = player $player_char weapon 32 ammo
+
+            if and 
+            12@ > 9998
+            0124: last_input_was_pad
+            then
+            0227: 8@ = car 9@ health
+            if
+            8@ < 2980
+            then
+            8@ += 20
+            0224: set_car 9@ health_to 8@
+            end
+            end
+        end
+end

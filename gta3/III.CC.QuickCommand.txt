@@ -1,0 +1,79 @@
+{$CLEO}
+{$OPCODE 0B20=2,read_clipboard_data %1d% size %2d%}
+{$OPCODE 0B21=2,write_clipboard_data %1d% size %2d%}
+
+:ClipboardControl
+// 0@ - @Clipboard_Data Pointer
+// 1@ - Is Ctrl+C down
+// 2@ - Is Ctrl+V down
+// 3@ - Temp Int
+// 4@ - Temp Int
+// 5@ - Temp Int
+// 6@ - Temp Int
+// 10@v-14@v - Temp String
+
+0AC6: 0@ = label @Clipboard_Data offset
+
+WHILE TRUE
+    WAIT 0
+    IF AND
+        0AB0: KEY_PRESSED 0x11        // Ctrl
+        0AB0: KEY_PRESSED 0x56        // V
+    THEN
+        IF 2@ == 0
+        THEN
+            0B20: read_clipboard_text_to 0@ size 64
+            3@ = 0
+            IF 3@ == 0
+            THEN
+                IF 0AD4:   3@ = scan_string 0@ format "SetPlayerAngle(%g)" 4@
+                THEN 0173: set_actor $PLAYER_ACTOR Z_angle_to 4@
+                END
+            END
+            IF 3@ == 0
+            THEN
+                IF 0AD4:   3@ = scan_string 0@ format "SetPlayerArmour(%d)" 4@
+                THEN
+                    04DD: 5@ = actor $PLAYER_ACTOR armour
+                    0062: 4@ -= 5@
+                    035F: GIVE_ARMOUR_TO_ACTOR $PLAYER_ACTOR 4@
+                END
+            END
+            IF 3@ == 0
+            THEN
+                IF 0AD4:   3@ = scan_string 0@ format "SetPlayerHealth(%d)" 4@
+                THEN 0223: set_actor $PLAYER_ACTOR health_to 4@
+                END
+            END
+            IF 3@ == 0
+            THEN
+                IF
+                    0AD4:   3@ = scan_string 0@ format "PutPlayerAt(%g, %g, %g, %g)" 4@ 5@ 6@ 7@
+                THEN
+                    IF 3@ >= 3
+                    THEN
+                        00A1: put_actor $PLAYER_ACTOR at 4@ 5@ 6@
+                        IF 3@ == 4
+                        THEN 0173: set_actor $PLAYER_ACTOR Z_angle_to 7@
+                        END
+                    ELSE
+                        00A1: put_actor $PLAYER_ACTOR at 4@ 5@ -100.0
+                    END
+                END
+            END
+            IF 3@ > 0
+            THEN
+                0ACA: show_text_box 0@
+                2@ = 1
+            END
+        END
+    ELSE
+        2@ = 0
+    END
+END
+
+:Clipboard_Data   // temporary storage for 64 bytes (including trailing \0) of clipboard data
+hex
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+end

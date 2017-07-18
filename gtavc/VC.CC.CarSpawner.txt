@@ -1,0 +1,30 @@
+{$CLEO}
+0000:
+
+0AC6: 1@ = label @Data offset
+
+while true
+wait 0
+ for 0@ = #LANDSTAL to #VICECHEE
+  if and
+    0@ <> #AIRTRAIN
+    0@ <> #DEADDODO
+    0@ <> #RCBARON
+    0@ <> #RCRAIDER
+    0@ <> #RCGOBLIN
+  then  
+    0ADB: 1@ = car_model 0@ name  
+    if 
+        0ADC: test_cheat 1@
+    then
+        0ADD: spawn_car_with_model 0@ at_player_location
+        0ACE: show_formatted_text_box "%s spawned..." 1@
+    end
+  end  
+ end
+end 
+
+:Data   
+hex
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+end

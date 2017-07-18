@@ -1,0 +1,160 @@
+{$CLEO .cs}
+0000:
+
+05E5: 15@ = game_version
+if or
+ 15@ == 0
+ 15@ == 1
+then
+ //0A8C: write_memory 0x488D1F size 5 value 0x90 virtual_protect 1  //CPickups::DoPickUpEffects(CEntity *) for weapon pickups
+ 0A8C: write_memory 0x4889C5 size 5 value 0x90 virtual_protect 1  //CPickups::DoPickUpEffects(CEntity *) for money pickups
+ 0A8C: write_memory 0x43FAD5 size 1 value 0xE9 virtual_protect 1
+ 0A8C: write_memory 0x43FAD6 size 4 value 0x00000546 virtual_protect 1  
+ 0A8C: write_memory 0x43F44B size 5 value 0x90 virtual_protect 1 //coronas
+ 0A8C: write_memory 0x43F65A size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43F757 size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43F8A8 size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43FF7D size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43FFCD size 5 value 0x90 virtual_protect 1   
+ 0A8C: write_memory 0x43F54C size 5 value 0x90 virtual_protect 1 //static shadows
+ 0A8C: write_memory 0x43F860 size 5 value 0x90 virtual_protect 1   
+ 0A8C: write_memory 0x43F61B size 5 value 0x90 virtual_protect 1 //point light     
+else
+ 0A8C: write_memory 0x4888A5 size 5 value 0x90 virtual_protect 1  //CPickups::DoPickUpEffects(CEntity *) for money pickups
+ 0A8C: write_memory 0x43FA45 size 1 value 0xE9 virtual_protect 1
+ 0A8C: write_memory 0x43FA46 size 4 value 0x00000546 virtual_protect 1  
+ 0A8C: write_memory 0x43F3BB size 5 value 0x90 virtual_protect 1 //coronas
+ 0A8C: write_memory 0x43F5CA size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43F6C7 size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43F818 size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43FEED size 5 value 0x90 virtual_protect 1
+ 0A8C: write_memory 0x43FF3D size 5 value 0x90 virtual_protect 1    
+ 0A8C: write_memory 0x43F4BC size 5 value 0x90 virtual_protect 1 //static shadows
+ 0A8C: write_memory 0x43F7D0 size 5 value 0x90 virtual_protect 1   
+ 0A8C: write_memory 0x43F58B size 5 value 0x90 virtual_protect 1 //point light  
+end
+
+wait 10000  //otherwise crashes at 0x6594E2 with 016F: opcode when starting a new game.
+
+while true
+wait 0
+05E5: 15@ = game_version
+if
+ 15@ == 0
+then
+ 9@ = 0x945D30
+else
+ if
+  15@ == 1
+ then
+  9@ = 0x945D38
+ else
+  9@ = 0x944D38
+ end 
+end
+0A8E: 10@ = 9@ + 0x440C // int
+
+
+for 0@ = 9@ to 10@ step 0x34 
+    0A8E: 5@ = 0@ + 0x0 // int
+    0A8D: 1@ = read_memory 5@ size 4 virtual_protect 0  //x
+    0A8E: 5@ = 0@ + 0x4 // int
+    0A8D: 2@ = read_memory 5@ size 4 virtual_protect 0  //y
+    0A8E: 5@ = 0@ + 0x8 // int
+    0A8D: 3@ = read_memory 5@ size 4 virtual_protect 0  //z
+    0A8E: 5@ = 0@ + 0x10 // int 
+    0A8D: 6@ = read_memory 5@ size 4 virtual_protect 0  //6@ - [POINTER] - CObjectVC* pObject
+    0A8E: 5@ = 0@ + 0x22 // int
+    0A8D: 7@ = read_memory 5@ size 2 virtual_protect 0 //7@ - [WORD] - wModelId
+      if and
+       1@ <> 0.0
+       2@ <> 0.0
+       3@ <> 0.0
+       6@ <> 0
+      then
+       0AEC: 8@ = object_struct 6@ handle
+        if
+         03CA:   object 8@ exists
+        then
+         if
+          00EC:   actor $PLAYER_ACTOR sphere 0 near_point 1@ 2@ radius 60.0 60.0
+         then
+          if or
+           00EC:   actor $PLAYER_ACTOR sphere 0 near_point 1@ 2@ radius 45.0 45.0
+           02CC:   object 8@ bounding_sphere_visible
+          then
+           02CE: 4@ = ground_z 1@ 2@ 3@
+           inc(4@, 0.05)
+           0A8F: 13@ = 3@ - 4@ // int
+             if
+              13@ <= 5.0
+             then
+              0A8E: 5@ = 0@ + 8 // int
+              0A8C: write_memory 5@ size 4 value 4@ virtual_protect 0 //z
+             
+              0176: 15@ = object 8@ z_angle 
+              0B17: 15@ _&= 0xFF
+             
+               if 
+                15@ <> 0xFF
+               then 
+                0208: 15@ = random_float 0.0 360.0
+                0B17: 15@ _&= 0xFF
+                 if 
+                  7@ <> 337 //#MONEY
+                 then
+                  0453: set_object 8@ XY_rotation 90.0 0.0 angle 15@       
+                 else
+                  0453: set_object 8@ XY_rotation 0.0 0.0 angle 15@
+                 end
+               end
+               0AB1: call_scm_func @createParticleForWeapon params_count 4 wModelId 7@ coords 1@ 2@ 4@ 
+             end 
+          end
+         end
+        end
+      end
+end // for
+
+end
+
+:createParticleForWeapon
+0605: 4@ = model 0@ weapon id
+if
+ 4@ == -1
+then
+ 4@ = 37
+end
+
+4@ *= 8
+05E5: 15@ = game_version
+if
+ 15@ == 0
+then
+ 4@ += 0x688098
+else
+ if
+  15@ == 1
+ then
+  4@ += 0x688098 
+ else
+  4@ += 0x687098
+ end 
+end 
+
+0A8D: 5@ = read_memory 4@ size 1 virtual_protect 0
+4@ += 1
+0A8D: 6@ = read_memory 4@ size 1 virtual_protect 0
+4@ += 1
+0A8D: 7@ = read_memory 4@ size 1 virtual_protect 0
+
+if
+ 0@ == 337 //#MONEY
+then
+ 5@ = 0
+ 6@ = 155
+ 7@ = 0
+end 
+
+016F: draw_shadow 3 at 1@ 2@ 3@ angle 0.0 size 0.5 intensity 255 colour 5@ 6@ 7@
+0AB2: ret 0

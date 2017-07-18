@@ -1,0 +1,526 @@
+{$CLEO .cs}
+0@ = 0
+IF 0124:
+THEN
+ 0@ = 1
+END
+IF 8124:
+THEN
+ 0@ = 1
+END
+IF 0@ == 0   // 0@ == Is GInput installed?
+THEN
+0ACA: show_text_box "You need to install GInput in order to use this script: gtaforums.com/topic/562765-ginput/"
+0A93: end_custom_thread
+END
+0A8C: write_memory 0x68B000 size 4 value 0.0125 virtual_protect 1
+
+const
+LEFTSTICKX            = 0  //<LS>
+LEFTSTICKY            = 1  //LS^
+RIGHTSTICKX           = 2  //<RS>
+RIGHTSTICKY           = 3  //RS^
+LEFTSHOULDER1         = 4  //LB
+LEFTSHOULDER2         = 5  //LT
+RIGHTSHOULDER1        = 6  //RB
+RIGHTSHOULDER2        = 7  //RT
+DPADUP                = 8  //UP
+DPADDOWN              = 9  //DOWN
+DPADLEFT              = 10 //LEFT
+DPADRIGHT             = 11 //RIGHT
+START                 = 12 //START
+SELECT                = 13 //SELECT
+SQUARE                = 14 //X
+TRIANGLE              = 15 //Y
+CROSS                 = 16 //A
+CIRCLE                = 17 //B
+LEFTSHOCK             = 18 //LS
+RIGHTSHOCK            = 19 //RS
+GUIDE                 = 20 //Guide
+end
+0000:
+0A8C: write_memory 0x5349DB size 2 value 0x9090 virtual_protect 1 //M4
+0A8C: write_memory 0x5349E0 size 2 value 0x9090 virtual_protect 1 //Ruger
+0A8C: write_memory 0x5349E5 size 2 value 0x9090 virtual_protect 1 //M60
+0A8C: write_memory 0x5349D1 size 2 value 0x9090 virtual_protect 1 //sniper rifle (29)
+0A8C: write_memory 0x5349D6 size 2 value 0x9090 virtual_protect 1 //sniper rifle (28)
+0A8C: write_memory 0x5349C8 size 2 value 0x9090 virtual_protect 1 //rocket launcher
+0A8C: write_memory 0x00783538 size 4 value 0x13 virtual_protect 1
+0A8C: write_memory 0x0078359C size 4 value 0x13 virtual_protect 1
+0A8C: write_memory 0x00783560 size 4 value 0x28040 virtual_protect 1
+0A8C: write_memory 0x007835C4 size 4 value 0x28040 virtual_protect 1
+
+0A8C: write_memory 0x00508E03 size 9 value 0x90 virtual_protect 1
+0AC6: 0@ = label @start offset
+0A8C: write_memory 0x00508E03 size 1 value 0xE9 virtual_protect 1
+0606: set_mem_offset memory pointer 0x00508E04 memory to point 0@ virtual protect 1
+0AC6: 0@ = label @start2 offset
+0@ += 0x1
+0606: set_mem_offset memory pointer 0@ memory to point 0x0052B070 virtual_protect 1
+0@ += 0x5
+0606: set_mem_offset memory pointer 0@ memory to point 0x00508FA3 virtual_protect 1
+0AC6: 0@ = label @start3 offset
+0@ += 0x1
+0606: set_mem_offset memory pointer 0@ memory to point 0x0052B070 virtual_protect 1
+0@ += 0x5
+0606: set_mem_offset memory pointer 0@ memory to point 0x00508FA3 virtual_protect 1
+
+0A8C: write_memory 0x0052B491 size 6 value 0x90 virtual_protect 1
+0AC6: 0@ = label @jnz2 offset
+0A8C: write_memory 0x0052B491 size 1 value 0xE9 virtual_protect 1
+0606: set_mem_offset memory pointer 0x0052B492 pointing_to 0@ virtual_protect 1
+0AC6: 0@ = label @jnz2 offset
+0@ += 0x3
+0606: set_mem_offset memory pointer 0@ memory to point 0x004F4930 virtual_protect 1
+0AC6: 0@ = label @jnz3 offset
+0@ += 0x1
+0606: set_mem_offset memory pointer 0@ memory to point 0x0052B522 virtual_protect 1
+0@ += 0x5
+0606: set_mem_offset memory pointer 0@ memory to point 0x0052B522 virtual_protect 1   
+
+//audio reloading fix
+0A8C: write_memory 0x0052BFA3 size 1 value 0x00 virtual_protect 1   
+
+while true
+wait 0
+0AB1: call_scm_func @weapon_cleaner 0
+if
+ 8124: not last_input_was_pad
+then
+ 1@ = 5
+ 4@ = 6
+ 5@ = 7
+ 6@ = 15
+ 8@ = 16
+ 10@ = 17
+else
+ 1@ = DPADLEFT
+ 4@ = LEFTSHOULDER2
+ 5@ = DPADRIGHT
+ 6@ = TRIANGLE
+ 8@ = CROSS
+ 10@ = RIGHTSHOULDER2
+end
+
+if 
+ 00E1:   player 0 pressed_key 4@ //Aim key
+then
+    while 00E1:   player 0 pressed_key 4@ //Aim key
+    wait 0 
+       if and
+        80E0:   not player $PLAYER_CHAR driving
+        80E1:   not player 0 pressed_key 8@ //Sprint key
+        80E1:   not player 0 pressed_key 1@ //prev-next
+        80E1:   not player 0 pressed_key 5@ //weapon
+        80E1:   not player 0 pressed_key 6@ //enter-exit  
+       then
+        0A8C: write_memory 0x55760A size 4 value 0x00A0D924 virtual_protect 1      //crosshair
+        if
+         0124: last_input_was_pad  
+        then
+         0AB1: call_scm_func @aim_sensitivity params_count 1 restore 0
+        end 
+        0AB1: call_scm_func @weapon_state params_count 0 7@
+          if and
+           00E1:   player 0 pressed_key 4@ //Aim key
+           8AB0: not key_pressed 0x01 // VK_LBUTTON      
+           8601: not is_button_pressed_on_pad RIGHTSHOULDER2 with_sensitivity 0xFF 
+           7@ <> 2
+          then  
+              0AC6: 12@ = label @jnz3 offset
+              12@ += 0x1
+              0606: set_mem_offset memory pointer 12@ memory to point 0x0052B497 virtual_protect 1 
+              046F: store_player $player_char currently_armed_weapon_to 2@
+              gosub @weapon_check
+                  if 
+                   2@ == true
+                  then
+                   0A8C: write_memory 0x0052B491 size 6 value 0x90 virtual_protect 1
+                   0AC6: 14@ = label @jnz2 offset
+                   0A8C: write_memory 0x0052B491 size 1 value 0xE9 virtual_protect 1
+                   0606: set_mem_offset memory pointer 0x0052B492 memory to point 14@ virtual_protect 1  
+             
+                   0AC6: 14@ = label @start3 offset
+                   14@ += 0x1
+                   0606: set_mem_offset memory pointer 14@ memory to point 0x0052DCD0 virtual_protect 1
+                   0602: emulate_button_press_on_pad 10@ sensitivity 0xFF  
+                  else
+                   0A8C: write_memory 0x52B491 size 4 value 0x008B850F virtual_protect 1
+                   0A8C: write_memory 0x52B495 size 2 value 0x0000 virtual_protect 1  
+                  end
+                  
+                   if and
+                    8124: last_input_was_keyboard
+                    0AB0:  key_pressed 82 //r 
+                   then
+                    0AB1: call_scm_func @reloading params_count 0 13@
+                    0A8C: write_memory 0x0052B491 size 6 value 0x90 virtual_protect 1
+                    0AC6: 0@ = label @jnz2 offset
+                    0A8C: write_memory 0x0052B491 size 1 value 0xE9 virtual_protect 1
+                    0606: set_mem_offset memory pointer 0x0052B492 pointing_to 0@ virtual_protect 1
+                    0AC6: 14@ = label @start3 offset
+                    14@ += 0x1
+                    0606: set_mem_offset memory pointer 14@ pointing_to 0x0052B070 virtual_protect 1 
+                    0602: emulate_button_press_on_pad 10@ sensitivity 0xFF 
+                     0A96: 9@ = actor $player_actor struct
+                     9@ += 0x14C
+                     0A8C: write_memory 9@ size 1 value 3 virtual_protect 1  // avoiding weird hands animation bug 
+                    0A8C: write_memory 13@ size 4 value 2 virtual_protect 1
+                   end 
+
+                   if and
+                    0124: last_input_was_pad  
+                    0601: is_button_pressed_on_pad CIRCLE with_sensitivity 0xFF 
+                   then
+                    0AB1: call_scm_func @reloading params_count 0 13@
+                    0A8C: write_memory 0x0052B491 size 6 value 0x90 virtual_protect 1
+                    0AC6: 0@ = label @jnz2 offset
+                    0A8C: write_memory 0x0052B491 size 1 value 0xE9 virtual_protect 1
+                    0606: set_mem_offset memory pointer 0x0052B492 pointing_to 0@ virtual_protect 1
+                    0AC6: 14@ = label @start3 offset
+                    14@ += 0x1
+                    0606: set_mem_offset memory pointer 14@ pointing_to 0x0052B070 virtual_protect 1 
+                    0602: emulate_button_press_on_pad 10@ sensitivity 0xFF  
+                     0A96: 9@ = actor $player_actor struct
+                     9@ += 0x14C
+                     0A8C: write_memory 9@ size 1 value 3 virtual_protect 1  // avoiding weird hands animation bug 
+                    0A8C: write_memory 13@ size 4 value 2 virtual_protect 1
+                   end
+          else
+           0AC6: 14@ = label @start3 offset
+           000A: 14@ += 0x1
+           0A8D: 14@ = read_memory 14@ size 1 virtual_protect 1 
+           0AC6: 15@ = label @start2 offset
+           000A: 15@ += 0x1
+           0A8D: 15@ = read_memory 15@ size 1 virtual_protect 1 
+           000E: 14@ -= 15@ // integer values 
+           
+              if or
+               00E1:    player 0 pressed_key 8@ //Sprint key
+               00E1:    player 0 pressed_key 1@ //prev-next
+               00E1:    player 0 pressed_key 5@ //weapon
+               00E1:    player 0 pressed_key 6@ //enter-exit
+               00E1:    player 0 pressed_key 8@  
+               14@ <> 0x0A
+              then
+               0AC6: 14@ = label @start3 offset
+               14@ += 0x1
+               0606: set_mem_offset memory pointer 14@ memory to point 0x0052B070 virtual_protect 1 
+               0AC6: 12@ = label @jnz3 offset
+               12@ += 0x1
+               0606: set_mem_offset memory pointer 12@ memory to point 0x0052B522 virtual_protect 1 
+              end
+           
+          end
+       end
+    
+    
+       if 
+        80E1:  not player 0 pressed_key 10@ //Shoot
+       then
+        046F: store_player $player_char currently_armed_weapon_to 2@
+        gosub @weapon_check 
+       	 if 
+       	  2@ == true
+       	 then
+       	    if and
+       		 80E1:    player 0 pressed_key 1@ //prev-next
+       		 80E1:    player 0 pressed_key 5@ //weapon
+       		 17@ < 0
+       		 80E0:   not player $PLAYER_CHAR driving
+       		then
+       		 0AB1: call_scm_func @reloading params_count 0 13@
+       		 0A8D: 13@ = read_memory 13@ size 4 virtual_protect 0
+       		  if
+       		   13@ <> 2
+       		  then  
+       		   wait 0
+       		   0A96: 9@ = actor $player_actor struct
+       		   9@ += 0x14C
+       		   0A8C: write_memory 9@ size 1 value 3 virtual_protect 1  
+       			0AB1: call_scm_func @walk 0
+       		   0AC6: 12@ = label @jnz3 offset
+       		   12@ += 0x1
+       		   0606: set_mem_offset memory pointer 12@ pointing_to 0x0052B497 virtual_protect 1    
+       		  end
+       		end 
+       		 17@ = 0 
+       	 end    
+       else 
+        046F: store_player $player_char currently_armed_weapon_to 2@
+        gosub @weapon_check
+           if 
+            7@ <> 2
+           then
+             if 
+              2@ == true
+             then                  
+              0AC6: 12@ = label @jnz3 offset
+              12@ += 0x1
+              0606: set_mem_offset memory pointer 12@ pointing_to 0x0052B522 virtual_protect 1 
+             else
+              0A8C: write_memory 0x52B491 size 4 value 0x008B850F virtual_protect 1
+              0A8C: write_memory 0x52B495 size 2 value 0x0000 virtual_protect 1
+             end
+            end  
+            17@ = -5000  
+       end 
+    
+        
+       if or
+       00E1:    player 0 pressed_key 1@ //prev-next
+       00E1:    player 0 pressed_key 5@ //weapon
+       then
+          046F: store_player $player_char currently_armed_weapon_to 2@
+           if and
+            00E1:   player 0 pressed_key 4@ //Aim key
+            2@ <> 28
+            2@ <> 29
+            2@ <> 30
+            80E0:   not player $PLAYER_CHAR driving
+           then
+               0A96: 9@ = actor $player_actor struct
+               9@ += 0x14C
+               0A8C: write_memory 9@ size 1 value 3 virtual_protect 1  
+               0AB1: call_scm_func @walk 0
+           else
+               if and      
+                00E1:   player 0 pressed_key 4@ //Aim key
+                029F:   player $player_char stopped
+                00E1:    player 0 pressed_key 1@
+                80E0:   not player $PLAYER_CHAR driving
+               then
+                 0A8C: write_memory 0x5349D1 size 2 value 0x1D74 virtual_protect 1 //sniper rifle (29)
+                 0A8C: write_memory 0x5349D6 size 2 value 0x1874 virtual_protect 1 //sniper rifle (28)
+                 0A8C: write_memory 0x5349C8 size 2 value 0x2674 virtual_protect 1 //rocket launcher
+                 0A96: 9@ = actor $player_actor struct
+                 9@ += 0x14C
+                 0A8C: write_memory 9@ size 1 value 3 virtual_protect 1  
+                 0AB1: call_scm_func @walk 0    
+           
+                     if
+                      9@ <> 0x0C
+                     then
+                       01B8: set_player $player_char armed_weapon_to 2@
+                       0A96: 9@ = actor $player_actor struct
+                       9@ += 0x244
+                       0A8C: write_memory 9@ size 1 value 0x0C virtual_protect 1
+                       16@ = 0
+                         while 16@ < 20
+                         wait 0
+                           01B8: set_player $player_char armed_weapon_to 2@
+                           0602: emulate_button_press_on_pad 4@ sensitivity 0x00
+                         end
+                         while true
+                         wait 0
+                           if
+                            80E1:  not player 0 pressed_key 4@ //Aim key
+                           then
+                            break
+                           end
+                          end
+                       0A8C: write_memory 0x5349D1 size 2 value 0x9090 virtual_protect 1 //sniper rifle (29)
+                       0A8C: write_memory 0x5349D6 size 2 value 0x9090 virtual_protect 1 //sniper rifle (28)
+                       0A8C: write_memory 0x5349C8 size 2 value 0x9090 virtual_protect 1 //rocket launcher
+                     end
+               else
+                      if and
+                       00E1:   player 0 pressed_key 4@ //Aim key
+                       80E0:   not player $PLAYER_CHAR driving
+                      then
+                       0A96: 9@ = actor $player_actor struct
+                       9@ += 0x14C
+                       0A8C: write_memory 9@ size 1 value 3 virtual_protect 1  
+                       0AB1: call_scm_func @walk 0  
+                      end
+               end
+           end  
+       end
+    end // while 00E1
+    17@ = -5000  
+    repeat
+    wait 0
+    until 17@ < 0 
+    0AC6: 14@ = label @start3 offset
+    14@ += 0x1
+    0606: set_mem_offset memory pointer 14@ memory to point 0x0052B070 virtual_protect 1 
+    0AC6: 12@ = label @jnz3 offset
+    12@ += 0x1
+    0606: set_mem_offset memory pointer 12@ memory to point 0x0052B522 virtual_protect 1    
+    0A8C: write_memory 0x55760A size 4 value 0x00688640 virtual_protect 1 //crosshair
+    0A8C: write_memory 0x68B000 size 4 value 0.0125 virtual_protect 1 //sensitivity
+end // 00E1:   player 0 pressed_key 4@ //Aim key
+
+
+
+
+
+
+if and
+ 8124: last_input_was_keyboard
+ 0AB0:  key_pressed 82 //r 
+then
+ 0AB1: call_scm_func @reloading params_count 0 13@
+ 0602: emulate_button_press_on_pad 10@ sensitivity 0xFF  
+ 3@ = 40
+end 
+
+if and
+ 0124: last_input_was_pad
+ 0601: is_button_pressed_on_pad CIRCLE with_sensitivity 0xFF
+then
+ gosub @weapon_check
+ if 2@ == true
+ then
+ 0AB1: call_scm_func @reloading params_count 0 13@
+ 0602: emulate_button_press_on_pad 10@ sensitivity 0xFF  
+ 3@ = 40
+ end
+end
+ 
+if
+ 3@ >= 1
+then
+ 0A96: 9@ = actor $player_actor struct
+ 9@ += 0x14C
+ 0A8C: write_memory 9@ size 1 value 3 virtual_protect 1  // avoiding weird hands animation bug
+ 0A8C: write_memory 13@ size 4 value 2 virtual_protect 1
+ 3@ -= 1
+end  
+ 
+ 
+if
+02E0:   actor $player_actor firing_weapon 
+then
+    if  
+     80E1:  not player 0 pressed_key 10@ //Shoot
+    then
+     046F: store_player $player_char currently_armed_weapon_to 2@
+     gosub @weapon_check 
+    	 if 
+    	  2@ == true
+    	 then
+    	   wait 0
+    	   0A96: 9@ = actor $player_actor struct
+    	   9@ += 0x14C
+    	   0A8C: write_memory 9@ size 1 value 3 virtual_protect 1 // avoiding weird hands animation bug  
+    	 end    
+    end   
+end 
+ 
+end
+
+:weapon_cleaner
+if
+ 0AB0: key_pressed 0x8 //backspace
+then
+ 046F: store_player $PLAYER_CHAR currently_armed_weapon_to 9@ 
+ 0AB1: call_scm_func @reloading params_count 0 13@
+ 13@ -= 4
+ 0AA6: call_method 0x5D4C90 struct 13@ num_params 0 pop 0
+end
+
+ while 0AB0: key_pressed 0x8
+  wait 0
+ end
+0AB2: ret 0
+
+:walk
+0054: store_player $player_char position_to 0@ 1@ 2@
+0211: actor $player_actor walk_to 0@ 1@
+0AB2: ret 0
+
+:reloading
+0A96: 0@ = actor $PLAYER_ACTOR struct
+0@ += 1284  
+0A8D: 1@ = read_memory 0@ size 1 virtual_protect 0 
+0A96: 0@ = actor $PLAYER_ACTOR struct
+0@ += 1032
+1@ *= 24 
+000A: 0@ += 1@ // integer values 
+0@ += 4 
+0AB2: ret 1 0@
+
+
+:weapon_state
+0A96: 0@ = actor $PLAYER_ACTOR struct
+0@ += 1284  
+0A8D: 1@ = read_memory 0@ size 1 virtual_protect 0 
+0A96: 0@ = actor $PLAYER_ACTOR struct
+0@ += 1032
+1@ *= 24 
+000A: 0@ += 1@ // integer values 
+0@ += 4
+0A8D: 0@ = read_memory 0@ size 4 virtual_protect 1
+0AB2: ret 1 0@
+
+
+:weapon_check
+if and
+2@ >= 17
+2@ <= 33
+2@ <> 30
+then
+    0419: 2@ = player $player_char weapon 2@ ammo
+    if
+    2@ > 0
+    then
+    2@ = true
+    else
+    2@ = false
+    end
+else
+if
+2@ >= 100
+then
+2@ = true
+else
+2@ = false
+end
+end
+return
+
+:aim_sensitivity
+if
+ 0@ == 1
+then
+ 0A8C: write_memory 0x68B000 size 4 value 0.0125 virtual_protect 1
+else
+ 0A8C: write_memory 0x68B000 size 4 value 0.00625 virtual_protect 1
+end
+0AB2: ret 0
+
+:start
+hex
+89 D9                 //- mov ecx,ebx
+DDD8                  //- fstp st(0)
+8B 81 D4030000        //- mov eax,[ecx+000003D4]
+83 F8 01              //- cmp eax,01
+77 0A                 //- ja 
+end
+:start3
+hex
+E8 18E22BE3           //- call 0052B070
+E9 46C129E3           //- jmp 00508FA3
+end
+:start2
+hex
+E8 64220200           //- call 0052B070
+E9 92010000           //- jmp 00508FA3
+end
+
+:jnz2
+hex
+8B CB                 //- mov ecx,ebx
+E8 364353E3           //- call 004F4930
+end
+:jnz1
+hex
+84 C0                 //- test al,al
+74 05                 //- je 1CFC0605
+end
+:jnz3
+hex
+E9 1DAF56E3           //- jmp 0052B522
+E9 8DAE56E3           //- jmp 0052B497
+end

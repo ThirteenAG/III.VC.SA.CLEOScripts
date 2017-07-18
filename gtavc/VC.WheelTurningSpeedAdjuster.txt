@@ -1,0 +1,34 @@
+{$CLEO}
+0000:
+10@ = 0.0750000029802322
+0AC7: 1@ = var 10@ offset
+
+while true 
+wait 0
+if
+00E0:   player $PLAYER_CHAR driving 
+then
+0A8D: 5@ = read_memory 0x588FFA size 4 virtual_protect 0
+           if or
+              00E1:   key_pressed 0 10
+              00E1:   key_pressed 0 11 
+           then
+               if
+               5@ == 0x0069A634
+               then
+              0A8C: write_memory 0x588FFA size 4 value 1@ virtual_protect 1
+              0A8C: write_memory 0x589055 size 4 value 1@ virtual_protect 1
+               end
+           end
+           
+
+           if and
+              5@ <> 0x0069A634
+              80E1: not  key_pressed 0 10
+              80E1: not  key_pressed 0 11 
+           then
+              0A8C: write_memory 0x588FFA size 4 value 0x0069A634 virtual_protect 1
+              0A8C: write_memory 0x589055 size 4 value 0x0069A634 virtual_protect 1
+           end
+end           
+end

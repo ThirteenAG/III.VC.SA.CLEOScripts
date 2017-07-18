@@ -1,0 +1,166 @@
+{$CLEO}
+0000:
+const
+TRIANGLE              = 15 //Y
+end
+while true
+wait 0
+   if
+    0256:   player $PLAYER_CHAR defined      
+   then
+    if
+     00E1:   player 0 pressed_button 14  //jump
+    then
+     0A8D: 0@ = read_memory 0x978810 size 4 virtual_protect 1 //nCurrentInterior
+      if and
+       //03EE:   player $PLAYER_CHAR controllable 
+       80DF:   not actor $PLAYER_ACTOR driving
+       //84AD:   not actor $PLAYER_ACTOR in_water 
+       0@ == 0
+      then
+       17@ = 0
+            while 17@ < 1700
+            wait 0      
+             04C4: create_coordinate 8@ 10@ 11@ from_actor $PLAYER_ACTOR offset 0.0 0.4 4.0 
+             02CE: 12@ = ground_z 8@ 10@ 11@ 
+             0054: store_player 0 position_to 1@ 2@ 3@ 
+             0087: 6@ = 3@ // floating-point values only 
+             0063: 6@ -= 12@ // floating-point values (never used in VC or GTA 3) 
+
+                if 
+                   not 6@ > -0.4 // floating-point values 
+                then 
+                 04C4: create_coordinate 1@ 2@ 3@ from_actor $PLAYER_ACTOR offset 0.0 0.0 4.5 
+                 02CE: 0@ = ground_z 1@ 2@ 3@ 
+                 0054: store_player 0 position_to 1@ 2@ 3@ 
+                 0087: 7@ = 3@ // floating-point values only 
+                 0063: 7@ -= 0@ // floating-point values (never used in VC or GTA 3)
+
+                    if 
+                     7@ > -0.1 // floating-point values 
+                    then
+                      Player.CanMove($player_char) = False
+                      04C4: create_coordinate 13@ 14@ 15@ from_actor $PLAYER_ACTOR offset 0.0 -5.0 0.0 
+                      1@ = 2.0 // floating-point values 
+                      0009: 1@ += 12@ // floating-point values  // Note: the incorrect math opcode was used here
+                      Camera.SetPosition(13@, 14@, 1@, 0.0, 0.0, 0.0)
+                      0157: camera_on_player $player_char mode 15 switchstyle 1 
+                      04C4: create_coordinate 13@ 14@ 15@ from_actor $PLAYER_ACTOR offset 0.0 0.0 0.0 
+                      0A96: 5@ = actor $PLAYER_ACTOR struct 
+                      5@ += 120 // integer values 
+                      16@ = 0 // integer values 
+
+                        while 16@ < 100
+                         0A8C: write_memory 5@ size 4 value 0.022 virtual_protect 0 
+                         wait 0 
+                        end
+
+                     16@ = 0 // integer values                     
+                     if 
+                      not 6@ >= -1.0 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 374
+                     end
+                     
+                     if 
+                      not 6@ >= -1.5 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 100
+                     end
+                     
+                     if
+                      not 6@ >= -2.0 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 237
+                     end 
+                     
+                     if
+                      not 6@ >= -2.5 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 374
+                     end 
+                     
+                     var
+                      16@: int
+                      9@: int
+                     end
+                     while 16@ < 9@
+                      wait 0 
+                      0A96: 4@ = actor $PLAYER_ACTOR struct 
+                      4@ += 76 // integer values 
+                      0A8C: write_memory 5@ size 4 value 0.022 virtual_protect 0 
+                      0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+                      0AA5: call 0x405640 num_params 4 pop 4 4.0 42 0 4@  
+                     end
+
+
+                     while  16@ < 1700
+                     wait 0
+                      if and 
+                       8124: last_input_was_keyboard
+                       00E1:   player 0 pressed_button 9 
+                      then
+                       6@ = 5 
+                       break
+                      end
+                      if and 
+                       0124: last_input_was_pad 
+                       00E1:   player 0 pressed_button TRIANGLE 
+                      then
+                       6@ = 5 
+                       break
+                      end
+                      0A96: 4@ = actor $PLAYER_ACTOR struct 
+                      4@ += 76 // integer values 
+                      0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+                      0AA5: call 0x405640 num_params 4 pop 4 999.0 63 0 4@ 
+                      0055: put_player 0 at 8@ 10@ 12@
+                     end
+
+                     
+                     if
+                      6@ == 5
+                     then
+                      Camera.SetBehindPlayer
+                      Camera.Restore
+                      Player.CanMove($PLAYER_CHAR) = true 
+                      Actor.PutAt($PLAYER_ACTOR, 13@, 14@, 15@)
+                      0A96: 4@ = actor $PLAYER_ACTOR struct 
+                      4@ += 0x4C // integer values 
+                      0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+                      0AA5: call 0x405640 num_params 4 pop 4 999.0 146 0 4@  
+                      break
+                     else
+                      Camera.SetBehindPlayer
+                      Camera.Restore
+                      Player.CanMove($PLAYER_CHAR) = true
+                      break
+                     end
+                     
+                    end
+                end 
+
+            end //while 00E1
+      end
+    else
+     if and
+      80DF:   not actor $PLAYER_ACTOR driving
+      00E1:   player 0 pressed_button 18  //crouch
+     then
+      16@ = 0
+      while 00E1:   player 0 pressed_button 18
+      wait 0
+       if
+        16@ > 7000
+       then
+        0054: store_player $PLAYER_CHAR position_to 0@ 1@ 2@
+        02C0: set 3@ 4@ 5@ to_ped_path_coords_closest_to 0@ 1@ 2@
+        0055: put_player $PLAYER_CHAR at 3@ 4@ 5@
+        break
+       end 
+      end
+     end  
+    end  
+   end   
+end
+

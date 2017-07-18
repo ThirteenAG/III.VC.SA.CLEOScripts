@@ -1,0 +1,208 @@
+{$CLEO .csa}
+0000:
+const
+TRIANGLE              = 15 //Y
+end
+
+const
+_PLAYER_CHAR = $303
+_PLAYER_ACTOR = $304
+_onmission = $616
+end
+
+
+while true
+wait 0
+   if
+    0256:   player _PLAYER_CHAR defined 
+   then
+    if
+     00E1:   player 0 pressed_button 14  //jump
+    then
+     0DD8: 0@ = read_mem_addr 0x5794F4 size 4 fix_ib 1 //nCurrentInterior
+
+      if and
+       //03EE:   player _PLAYER_CHAR controllable 
+       80DF:   not actor _PLAYER_ACTOR driving
+       //84AD:   not actor _PLAYER_ACTOR in_water 
+       0@ == 0
+      then
+       17@ = 0
+            while 17@ < 1700
+            wait 0      
+             04C4: create_coordinate 8@ 10@ 12@ from_actor _PLAYER_ACTOR offset 0.0 0.4 4.0 
+             02CE: 12@ = ground_z 8@ 10@ 12@ 
+             0054: store_player 0 position_to 1@ 2@ 3@ 
+             0087: 6@ = 3@ // floating-point values only 
+             0063: 6@ -= 12@ // floating-point values (never used in VC or GTA 3)              
+
+                if 
+                   not 6@ > -0.4 // floating-point values 
+                then 
+                 04C4: create_coordinate 1@ 2@ 3@ from_actor _PLAYER_ACTOR offset 0.0 0.0 4.5 
+                 02CE: 0@ = ground_z 1@ 2@ 3@ 
+                 0054: store_player 0 position_to 1@ 2@ 3@ 
+                 0087: 7@ = 3@ // floating-point values only 
+                 0063: 7@ -= 0@ // floating-point values (never used in VC or GTA 3)
+
+                    if 
+                     7@ > -0.1 // floating-point values 
+                    then
+                      Player.CanMove(_PLAYER_CHAR) = False
+                      04C4: create_coordinate 13@ 14@ 15@ from_actor _PLAYER_ACTOR offset 0.0 -5.0 0.0 
+                      1@ = 2.0 // floating-point values 
+                      0009: 1@ += 12@ // floating-point values  // Note: the incorrect math opcode was used here
+                      Camera.SetPosition(13@, 14@, 1@, 0.0, 0.0, 0.0)
+                      0157: camera_on_player _PLAYER_CHAR mode 15 switchstyle 1 
+                      04C4: create_coordinate 13@ 14@ 15@ from_actor _PLAYER_ACTOR offset 0.0 0.0 0.0 
+                      0DD0: 11@ = get_label_addr @_ZN6CPools6GetPedEi
+                      0DD1: 11@ = get_func_addr_by_cstr_name 11@
+                      0DD3: context_set_reg 0 value _PLAYER_ACTOR
+                      0DD2: context_call_func 11@
+                      0DD4: 11@ = context_get_reg 0
+                      11@ += 0x7C // integer values
+                      16@ = 0 // integer values 
+
+                        while 16@ < 100
+                         0DD9: write_mem_addr 11@ value 0.022 size 4 add_ib 0 protect 1
+                         wait 0 
+                        end
+
+                     16@ = 0 // integer values                     
+                     if 
+                      not 6@ >= -1.0 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 374
+                     end
+                     
+                     if 
+                      not 6@ >= -1.5 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 100
+                     end
+                     
+                     if
+                      not 6@ >= -2.0 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 237
+                     end 
+                     
+                     if
+                      not 6@ >= -2.5 // floating-point values (never used in VC or GTA 3) 
+                     then
+                      9@ = 374
+                     end 
+                     
+                     var
+                      16@: int
+                      9@: int
+                     end
+                     while 16@ < 9@
+                      wait 0 
+                      0DD0: 11@ = get_label_addr @_ZN6CPools6GetPedEi
+                      0DD1: 11@ = get_func_addr_by_cstr_name 11@
+                      0DD3: context_set_reg 0 value _PLAYER_ACTOR
+                      0DD2: context_call_func 11@
+                      0DD4: 11@ = context_get_reg 0
+                      11@ += 0x7C // integer values
+                      0DD9: write_mem_addr 11@ value 0.022 size 4 add_ib 0 protect 1
+    
+                      0DD0: 11@ = get_label_addr @_ZN6CPools6GetPedEi
+                      0DD1: 11@ = get_func_addr_by_cstr_name 11@
+                      0DD3: context_set_reg 0 value _PLAYER_ACTOR
+                      0DD2: context_call_func 11@
+                      0DD4: 11@ = context_get_reg 0
+                      11@ += 0x4C
+                      0DD8: 11@ = read_mem_addr 11@ size 4 fix_ib 0
+    
+                      0DD0: 7@ = get_label_addr @_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf
+                      0DD1: 7@ = get_func_addr_by_cstr_name 7@
+                      0DD3: context_set_reg 3 value 4.0
+                      0DD3: context_set_reg 2 value 42
+                      0DD3: context_set_reg 1 value 0
+                      0DD3: context_set_reg 0 value 11@
+                      0DD2: context_call_func 7@  
+                     end
+
+
+                     while  16@ < 1700
+                     wait 0
+                      0DE0: 11@ = get_touch_point_state 5 mintime 0
+                      if 
+                       11@ == 1
+                      then
+                       6@ = 5 
+                       break
+                      end
+                      0DD0: 11@ = get_label_addr @_ZN6CPools6GetPedEi
+                      0DD1: 11@ = get_func_addr_by_cstr_name 11@
+                      0DD3: context_set_reg 0 value _PLAYER_ACTOR
+                      0DD2: context_call_func 11@
+                      0DD4: 11@ = context_get_reg 0
+                      11@ += 0x4C
+                      0DD8: 11@ = read_mem_addr 11@ size 4 fix_ib 0
+    
+                      0DD0: 7@ = get_label_addr @_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf
+                      0DD1: 7@ = get_func_addr_by_cstr_name 7@
+                      0DD3: context_set_reg 3 value 999.0
+                      0DD3: context_set_reg 2 value 63
+                      0DD3: context_set_reg 1 value 0
+                      0DD3: context_set_reg 0 value 11@
+                      0DD2: context_call_func 7@
+                      0055: put_player 0 at 8@ 10@ 12@
+                     end
+
+                     
+                     if
+                      6@ == 5
+                     then
+                      Camera.SetBehindPlayer
+                      Camera.Restore
+                      Player.CanMove(_PLAYER_CHAR) = true 
+                      Actor.PutAt(_PLAYER_ACTOR, 13@, 14@, 15@)
+                      0DD0: 11@ = get_label_addr @_ZN6CPools6GetPedEi
+                      0DD1: 11@ = get_func_addr_by_cstr_name 11@
+                      0DD3: context_set_reg 0 value _PLAYER_ACTOR
+                      0DD2: context_call_func 11@
+                      0DD4: 11@ = context_get_reg 0
+                      11@ += 0x4C
+                      0DD8: 11@ = read_mem_addr 11@ size 4 fix_ib 0
+    
+                      0DD0: 7@ = get_label_addr @_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf
+                      0DD1: 7@ = get_func_addr_by_cstr_name 7@
+                      0DD3: context_set_reg 3 value 999.0
+                      0DD3: context_set_reg 2 value 146
+                      0DD3: context_set_reg 1 value 0
+                      0DD3: context_set_reg 0 value 11@
+                      0DD2: context_call_func 7@
+                      break
+                     else
+                      Camera.SetBehindPlayer
+                      Camera.Restore
+                      Player.CanMove(_PLAYER_CHAR) = true
+                      break
+                     end
+                     
+                    end
+                end 
+
+            end //while 00E1
+      end
+    end  
+   end   
+end
+
+:_ZN8CGeneral11GetATanOfXYEff
+hex
+"_ZN8CGeneral11GetATanOfXYEff" 00
+end
+
+:_ZN6CPools6GetPedEi
+hex
+"_ZN6CPools6GetPedEi" 00
+end
+
+:_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf
+hex
+"_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf" 00
+end

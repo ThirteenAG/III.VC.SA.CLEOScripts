@@ -1,0 +1,120 @@
+{$CLEO}
+0000:
+var
+10@: int 
+12@: int 
+13@: int 
+14@: int
+15@: int 
+30@: int 
+end
+
+0A8D: 14@ = read_memory 0xB79034 size 4 virtual_protect 1  // dwTimesBusted
+0A8D: 15@ = read_memory 0xB7903C size 4 virtual_protect 1  // dwTimesWasted
+while true
+wait 0  
+0A8D: 12@ = read_memory 0xB79034 size 4 virtual_protect 1  // dwTimesBusted
+0A8D: 13@ = read_memory 0xB7903C size 4 virtual_protect 1  // dwTimesWasted
+
+    if or
+     12@ > 14@   
+     13@ > 15@
+    then
+       5@ = false
+       0AC8: 0@ = allocate_memory_size 260
+       0A8E: 2@ = 0@ + 0 // int
+       0A96: 1@ = actor $PLAYER_ACTOR struct
+       1@ += 0x5A0
+        for 13@ = 1 to 13
+          0A8D: 10@ = read_memory 1@ size 4 virtual_protect 1 //weapon id
+          1@ += 0xC                               
+          0A8D: 11@ = read_memory 1@ size 4 virtual_protect 1 //ammo for that weapon
+          1@ += 0x10     
+          
+          if 
+           11@ > 0
+          then
+           5@ = true
+           if
+            10@ > 0
+           then
+            30@ = 10@
+           end 
+          end            
+          
+          0A8C: write_memory 2@ size 4 value 10@ virtual_protect 1  //write weapon id
+          2@ += 4
+          0A8C: write_memory 2@ size 4 value 11@ virtual_protect 1  //write ammo
+          2@ += 4
+        end
+    
+        while 8256:  not player $player_char defined
+         wait 0
+        end  
+        while 016B:   fading
+         wait 0
+        end
+        
+        if
+         8491: not  actor $PLAYER_ACTOR has_weapon 30@
+        then
+        
+        16@ = 0
+        0989: set_text_boxes_width 300
+        0ACA: show_text_box "Pay $2000 bribe to get back your weapons? ~n~Press ~k~~PED_ANSWER_PHONE~ to buy.~n~~k~~VEHICLE_ENTER_EXIT~ to exit." 
+        while 16@ < 10000
+        wait 0 
+          if
+           00E1:   player 0 pressed_button 4 
+          then
+           010B: 3@ = player $PLAYER_CHAR money 
+            if
+             3@ < 2000
+            then
+             0ACA: show_text_box "You need ~h~$2000~w~ to buy back your weapons."
+             break
+            end
+ 
+            if
+             5@ = false
+            then
+             0ACA: show_text_box "You don't have any weapons to return."
+             break
+            end 
+            
+          0109: player $PLAYER_CHAR money += -2000 
+          0A8E: 2@ = 0@ + 0 // int
+           for 13@ = 1 to 13
+             0A8D: 10@ = read_memory 2@ size 4 virtual_protect 1 //weapon id
+             2@ += 4
+             0A8D: 11@ = read_memory 2@ size 4 virtual_protect 1 //ammo for that weapon
+             2@ += 4
+              if
+               11@ > 0
+              then
+                0AA7: call_function 0x454AC0 num_params 1 pop 1 10@ 4@    //weapon id to model id
+                0247: request_model 4@
+                038B: load_requested_models
+                01B2: give_actor $player_actor weapon 10@ ammo 11@ // Load the weapon model before using this
+                0249: release_model 4@
+              end
+           end
+          03E6: remove_text_box  
+          break
+          end
+          
+          if
+           00E1:   player 0 pressed_button 15
+          then
+           03E6: remove_text_box 
+           break
+          end
+        end
+        end
+    0AC9: free_allocated_memory 0@     
+    end
+    
+    
+0A8D: 14@ = read_memory 0xB79034 size 4 virtual_protect 1  // dwTimesBusted
+0A8D: 15@ = read_memory 0xB7903C size 4 virtual_protect 1  // dwTimesWasted
+end

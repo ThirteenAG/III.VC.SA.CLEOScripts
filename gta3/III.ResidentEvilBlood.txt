@@ -1,0 +1,97 @@
+{$CLEO}
+0000:
+var
+12@: int 
+13@: int 
+14@: int
+15@: int
+end
+
+0390: load_txd_dictionary 'damage' 
+038F: load_texture 'damage1' as 46
+038F: load_texture 'damage2' as 47
+
+0226: 14@ = actor $PLAYER_ACTOR health 
+04DD: 15@ = actor $PLAYER_ACTOR armour
+while true
+wait 0  
+0226: 12@ = actor $PLAYER_ACTOR health 
+04DD: 13@ = actor $PLAYER_ACTOR armour
+
+    if or
+     12@ < 14@   
+     13@ < 15@
+    then
+     if
+      0@ == 0
+     then 
+       while 0@ < 255
+       wait 0
+        05F5: call_scm_func @draw_texture params 9 _and it is - position 0.0 0.0 size 640.0 448.0 RGBA 255 255 255 0@ texture_id 47
+         if
+          8183:    player $PLAYER_CHAR health < 10
+         then
+          05F5: call_scm_func @draw_texture params 9 _and it is - position 0.0 0.0 size 640.0 448.0 RGBA 255 255 255 0@ texture_id 46
+         end
+       0@ += 50
+         if
+          0@ > 255
+         then
+          0@ = 255
+         end
+       04DD: 7@ = actor $PLAYER_ACTOR armour   
+         if and
+          7@ > 0
+          0@ > 150
+         then
+          7@ = false
+          break
+         end 
+       end //while 0@ < 255
+     else
+      0@ = 255  
+     end  
+    end
+    
+    if 
+     0@ > 0
+    then
+     05F5: call_scm_func @draw_texture params 9 _and it is - position 0.0 0.0 size 640.0 448.0 RGBA 255 255 255 0@ texture_id 47
+      if
+       8183:    player $PLAYER_CHAR health < 10
+      then
+       05F5: call_scm_func @draw_texture params 9 _and it is - position 0.0 0.0 size 640.0 448.0 RGBA 255 255 255 0@ texture_id 46
+      end
+     0@ -= 1
+    end
+    
+    if
+     8183:    player $PLAYER_CHAR health < 10
+    then
+     0332: set_actor $PLAYER_ACTOR bleeding_to 1
+    else
+     0332: set_actor $PLAYER_ACTOR bleeding_to 0
+    end
+    
+0226: 14@ = actor $PLAYER_ACTOR health 
+04DD: 15@ = actor $PLAYER_ACTOR armour
+end
+
+:draw_texture
+{example:
+05F5: call_scm_func @draw_texture params 9 _and it is - position 220.0 170.0 size 191.25 170.0 RGBA 255 255 255 255 texture_id 1 
+}
+05E0: 9@ = read_memory 0x943010 size 4 virtual_protect 1  //X 1920
+05E0: 10@ = read_memory 0x943014 size 4 virtual_protect 1  //Y 1080
+0093: 9@ = integer 9@ to_float
+0093: 10@ = integer 10@ to_float 
+//coordX = sa_coordX*(currentResX/640.0) 
+0015: 9@ /= 640.0 //  currentResX/640.0
+0069: 0@ *= 9@ // floating-point values 
+0015: 10@ /= 448.0 //  currentResY/448.0
+0069: 1@ *= 10@ // floating-point values
+0069: 2@ *= 9@ // floating-point values
+0069: 3@ *= 10@ // floating-point values
+03F0: enable_text_draw 1
+038D: draw_texture 8@ position 0@ 1@ size 2@ 3@ RGBA 4@ 5@ 6@ 7@
+05F6: ret 0

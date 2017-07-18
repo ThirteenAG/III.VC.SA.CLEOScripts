@@ -1,0 +1,202 @@
+{$CLEO .cs}
+0000:
+
+while true
+wait 0
+    //let's throw grenage by pressing G whilst not aiming
+    if and
+     80E0:   not player $PLAYER_CHAR driving
+     80E1:  not player 0 pressed_key 6 //aim
+     0AB0:   key_pressed 71 // G
+    then
+      0419: 15@ = player $player_char weapon 12 ammo  //12  2  Grenade  #grenade
+      14@ = 12
+      if not 15@ > 0
+      then
+       0419: 15@ = player $player_char weapon 13 ammo  //13  2  DetonateGrenade  #bomb
+       14@ = 13
+      end
+      if not 15@ > 0
+      then
+       0419: 15@ = player $player_char weapon 14 ammo  //14  2  TearGas  #teargas  
+       14@ = 14 
+      end
+      if not 15@ > 0
+      then
+       0419: 15@ = player $player_char weapon 15 ammo  //15  2  Molotov  #molotov
+       14@ = 15
+      end  
+  
+        if 
+         15@ > 0
+        then
+         0470: 13@ = actor $PLAYER_ACTOR current_weapon
+         01B9: set_actor $PLAYER_ACTOR armed_weapon_to 14@
+       0A8C: write_memory 0x52B491 size 4 value 0x008B850F virtual_protect 1
+       0A8C: write_memory 0x52B495 size 2 value 0x0000 virtual_protect 1
+       16@ = 0
+          while 0AB0:   key_pressed 71 // G 
+          wait 0
+           0602:  emulate_button_press_on_pad 17 sensitivity 0xFF
+          end
+          while 16@ < 1000
+          wait 0
+          end
+          01B9: set_actor $PLAYER_ACTOR armed_weapon_to 13@
+        end 
+    end
+    
+    
+    //and whilst aiming also
+    if and
+     80E0:   not player $PLAYER_CHAR driving
+     00E1:   player 0 pressed_key 6 //aim
+     0AB0:   key_pressed 71 // G
+    then
+      0419: 15@ = player $player_char weapon 12 ammo  //12  2  Grenade  #grenade
+      14@ = 12
+      13@ = #GRENADE
+      if not 15@ > 0
+      then
+       0419: 15@ = player $player_char weapon 13 ammo  //13  2  DetonateGrenade  #bomb
+       14@ = 13
+       13@ = #bomb 
+      end
+      if not 15@ > 0
+      then
+       0419: 15@ = player $player_char weapon 14 ammo  //14  2  TearGas  #teargas  
+       14@ = 14 
+       13@ = #teargas  
+      end
+      if not 15@ > 0
+      then
+       0419: 15@ = player $player_char weapon 15 ammo  //15  2  Molotov  #molotov
+       14@ = 15
+       13@ = #molotov
+      end
+
+         if
+          15@ > 0
+         then
+          8@ = 10.0
+          while 0AB0:  key_pressed 71 // G
+          wait 0
+           8@ += 1.0
+          end
+          if 8@ > 40.0
+          then
+           8@ = 40.0
+          end
+          04C4: create_coordinate 0@ 1@ 2@ from_actor $player_actor offset 0.0 1.2 0.0
+          0247: request_model 13@
+          038B: load_requested_models
+          0107: 10@ = create_object 13@ at 0@ 1@ 2@
+          0392: object 10@ toggle_in_moving_list 1
+          04D9: object 10@ set_scripted_collision_check 1
+          0382: set_object 10@ collision_detection 1
+          0170: 5@ = player $player_char z_angle
+          5@ += 90.0
+          02F7: 0@ = cosine 5@
+          02F6: 1@ = sine 5@
+          var
+          0@: float
+          1@: float
+          8@: float
+          end
+          0@ *= 8@
+          1@ *= 8@   
+          0381: throw_object 10@ velocity_in_direction 0@ 1@ 0.0
+          16@ = 0
+           while 16@ < 1500
+           wait 0
+            if and 
+             16@ > 800
+             04DA:   has_object 10@ collided
+            then
+             break
+            end
+           end
+          if
+           15@ > 0 //replace with explosion type
+          then
+            0400: store_coords_to 11@ 12@ 13@ from_object 10@ with_offset 0.0 0.0 0.0 
+            020C: create_explosion_with_radius 3 at 11@ 12@ 13@
+          else
+          //   
+          end
+          15@ -= 1
+          017A: set_player $player_char weapon 14@ ammo_to 15@
+          0108: destroy_object 10@
+         end
+    end
+
+
+0AB1: call_scm_func @loop params_count 0
+
+
+end 
+
+:loop
+0054: store_player $PLAYER_CHAR position_to 10@ 11@ 12@
+if
+    0AE1: 15@ = random_actor_near_point 10@ 11@ 12@ in_radius 50.0 find_next 0 pass_deads 1 //IF and SET
+then
+    repeat   
+            if 
+             02E0:   actor 15@ firing_weapon
+            then
+             0209: 9@ = random_int_in_ranges 1 50 
+                if //or
+                 //9@ > 0 /////////
+                 9@ == 5
+                then
+				 14@ = 12
+				 13@ = #GRENADE
+				 8@ = 40.0  
+				 04C4: create_coordinate 0@ 1@ 2@ from_actor 15@ offset 0.0 2.2 0.0
+				  if
+				   8AE2: not 7@ = random_vehicle_near_point 0@ 1@ 2@ in_radius 5.0 find_next 0 pass_wrecked 0
+				  then
+					0247: request_model 13@
+					038B: load_requested_models
+					0107: 10@ = create_object 13@ at 0@ 1@ 2@
+					0392: object 10@ toggle_in_moving_list 1
+					04D9: object 10@ set_scripted_collision_check 0
+					0382: set_objesct 10@ collision_detection 0
+					0172: 5@ = actor 15@ z_angle 
+					5@ += 90.0
+					02F7: 0@ = cosine 5@
+					02F6: 1@ = sine 5@
+					var
+					0@: float
+					1@: float
+					8@: float
+					end
+					0@ *= 8@
+					1@ *= 8@   
+					0381: throw_object 10@ velocity_in_direction 0@ 1@ 10.0
+					16@ = 0
+					while 16@ < 1500
+					wait 0
+						if
+						 16@ > 500
+						then
+						 04D9: object 10@ set_scripted_collision_check 1
+						 0382: set_object 10@ collision_detection 1
+						end
+						if and 
+						 16@ > 800
+						 04DA:   has_object 10@ collided
+						then
+						 break
+						end
+					end
+					0400: store_coords_to 11@ 12@ 13@ from_object 10@ with_offset 0.0 0.0 0.0 
+					020C: create_explosion_with_radius 3 at 11@ 12@ 13@
+					0108: destroy_object 10@
+                  end
+                end
+            end
+    until 85EF: not 15@ = random_actor_near_point 10@ 11@ 12@ in_radius 50.0 find_next 1 pass_deads 1 //IF and SET
+end
+0AB2: ret 0

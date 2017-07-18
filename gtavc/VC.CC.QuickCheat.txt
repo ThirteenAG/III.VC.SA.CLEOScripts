@@ -1,0 +1,78 @@
+{$CLEO}
+{$OPCODE 0B20=2,read_clipboard_data %1d% size %2d%}
+{$OPCODE 0B21=2,write_clipboard_data %1d% size %2d%}
+
+:ClipboardControl
+// 0@ - @Clipboard_Data Pointer
+// 1@ - Is Ctrl+C down
+// 2@ - Is Ctrl+V down
+// 3@ - Temp Int
+// 4@ - Temp Int
+
+0AC6: 0@ = label @Clipboard_Data offset     // you can also use 0AC8, but this way is better for short-term storage
+
+WHILE TRUE
+    WAIT 0
+    IF AND
+        0AB0: KEY_PRESSED 0x11        // Ctrl
+        0AB0: KEY_PRESSED 0x56        // V
+    THEN
+        // Make sure we've not already done this.
+        IF 2@ == 0
+        THEN
+            // Copy the clipboard text to our @Clipboard_Data memory.
+            0B20: read_clipboard_text_to 0@ size 27
+            
+            0085: 3@ = 0@
+            
+            // Now we have to get each char of the @Clipboard_Data memory and add it to the cheat string.
+            WHILE TRUE
+                // Read the next char of @Clipboard_Data.
+                0A8D: 4@ = read_memory 3@ size 1 virtual_protect 0
+                
+                // If the read char was 0, it's the final byte and we won't be copying it.
+                IF 4@ == 0
+                THEN BREAK
+                END
+                
+                // This is the function which is run every time the player presses a key to record the input for the cheat string.
+                // The cheat string is written backwards, so it's easier to do it this way than manually copying the data.
+                // Plus, other code needs to run when the last character is added to actually activate the cheat.
+                05E5: 15@ = game_version
+                if
+                 15@ == 0
+                then
+                 0AA5: call 0x4ABD20 num_params 1 pop 0 4@       // CPad::AddToCheatString()
+                else
+                 if
+                  15@ == 1
+                 then
+                  0AA5: call 0x4ABD40 num_params 1 pop 0 4@
+                 else
+                  if
+                   15@ == 2
+                  then
+                   0AA5: call 0x4ABBF0 num_params 1 pop 0 4@
+                  end 
+                 end 
+                end
+                // Go to the next character to read.
+                3@ += 1
+            END
+            
+            // 0x969110 has already been \0'd by CPad::AddToCheatString(), so we should display the entered cheat from the source.
+            0ACA: show_text_box 0@
+            
+            // Set that Ctrl+V code has already been run to prevent excessive looping.
+            2@ = 1
+        END
+    ELSE
+        // Set that Ctrl+V has been let go so it can be pressed to do the code again.
+        2@ = 0
+    END
+END
+
+:Clipboard_Data   // temporary storage for 28 bytes (including trailing \0) of clipboard data
+hex
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+end

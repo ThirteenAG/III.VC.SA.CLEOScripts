@@ -1,0 +1,4 @@
+{$CLEO .csa}
+0000:
+0DD9: write_mem_addr 0x246474 value 800.0 size 4 add_ib 1 protect 1
+end_thread

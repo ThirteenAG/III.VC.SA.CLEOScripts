@@ -1,0 +1,52 @@
+{$CLEO .csa}
+0DD6: 10@ = get_game_version
+
+if
+10@ == 5  //1.0.2
+then
+ 0006: 11@ = 0x55D16F
+end
+
+if
+10@ == 6 //1.0.3
+then
+ 0006: 11@ = 0x55D103
+end
+
+if
+10@ == 7 //1.0.5
+then
+ 0006: 11@ = 0x56D2EB
+end
+
+if
+10@ == 8 //1.0.6?
+then
+0006: 11@ = 0x5C09D7
+end
+
+if
+10@ == 9 //1.0.7?
+then
+ 0006: 11@ = 0x5AD707
+end 
+
+if
+10@ == 13 //1.0.8
+then
+ 0006: 11@ = 0x5AD707
+end                                
+
+if
+11@ <> 0
+then
+  for 0@ = #LANDSTAL to #UTILTR1
+    0085: 1@ = 11@
+    0085: 2@ = 0@
+    0012: 2@ *= 36
+    005A: 1@ += 2@
+    0DD9: write_mem_addr 1@ value 0 size 1 add_ib 1 protect 1
+  end
+end
+
+end_thread

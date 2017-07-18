@@ -1,0 +1,39 @@
+{$CLEO}
+0000:   
+while true
+wait 0
+  if
+   8124: not last_input_was_pad
+  then
+   if and
+    80E0:   not player $PLAYER_CHAR driving 
+    03EE:   player $PLAYER_CHAR controllable
+    0AB0: key_pressed 0x12 //ALT
+   then
+    if 
+     00E1:   key_pressed 0 8
+    then
+     0602: emulate_button_press_on_pad 8 with_sensitivity 0x55
+    end           
+    
+    if
+     00E1:   key_pressed 0 9
+    then
+     0602: emulate_button_press_on_pad 9 with_sensitivity 0x55
+    end  
+    
+    if
+     00E1:   key_pressed 0 10
+    then
+     0602: emulate_button_press_on_pad 10 with_sensitivity 0x55
+    end  
+    
+    if
+     00E1:   key_pressed 0 11
+    then
+     0602: emulate_button_press_on_pad 11 with_sensitivity 0x55
+    end
+    
+   end
+  end
+end

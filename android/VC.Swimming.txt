@@ -1,0 +1,300 @@
+{$CLEO .csa}
+0000:
+const
+LEFTSTICKX            = 0  //<LS>
+LEFTSTICKY            = 1  //LS^
+RIGHTSTICKX           = 2  //<RS>
+RIGHTSTICKY           = 3  //RS^
+LEFTSHOULDER1         = 4  //LB
+LEFTSHOULDER2         = 5  //LT
+RIGHTSHOULDER1        = 6  //RB
+RIGHTSHOULDER2        = 7  //RT
+DPADUP                = 8  //UP
+DPADDOWN              = 9  //DOWN
+DPADLEFT              = 10 //LEFT
+DPADRIGHT             = 11 //RIGHT
+START                 = 12 //START
+SELECT                = 13 //SELECT
+SQUARE                = 14 //X
+TRIANGLE              = 15 //Y
+CROSS                 = 16 //A
+CIRCLE                = 17 //B
+LEFTSHOCK             = 18 //LS
+RIGHTSHOCK            = 19 //RS
+GUIDE                 = 20 //Guide
+end
+
+const
+_PLAYER_CHAR = $303
+_PLAYER_ACTOR = $304
+_onmission = $616
+end
+
+0DD0: 5@ = get_label_addr @_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf
+0DD1: 5@ = get_func_addr_by_cstr_name 5@
+
+0DD0: 6@ = get_label_addr @_ZN6CPools6GetPedEi
+0DD1: 6@ = get_func_addr_by_cstr_name 6@    
+
+0DD0: 11@ = get_label_addr @_ZN8CGeneral11GetATanOfXYEff
+0DD1: 11@ = get_func_addr_by_cstr_name 11@
+
+while true
+wait 0
+   if and
+    00E0:   player _PLAYER_CHAR driving 
+    00E1:   player 0 pressed_button 15
+   then
+    03C1: 10@ = player _PLAYER_CHAR car_no_save 
+    if
+     02BF:   car 10@ sunk
+    then
+     03E2: make_actor _PLAYER_ACTOR exit_car
+    end
+   end
+   
+   if and
+    04AD:   actor _PLAYER_ACTOR in_water 
+    8184: not  actor _PLAYER_ACTOR health >= 1
+   then
+     while 8184: not  actor _PLAYER_ACTOR health >= 1
+     wait 0
+     end
+    0054: store_player _PLAYER_CHAR position_to 0@ 1@ 2@
+    00A1: put_actor _PLAYER_ACTOR at 0@ 1@ 2@
+   end  
+
+
+   if and
+    0256:   player _PLAYER_CHAR defined 
+    80DF:   not actor _PLAYER_ACTOR driving 
+    0184:   actor _PLAYER_ACTOR health >= 1
+   then
+      if
+       04AD:   actor _PLAYER_ACTOR in_water 
+      then
+       0DD3: context_set_reg 0 value _PLAYER_ACTOR
+       0DD2: context_call_func 6@
+       0DD4: 0@ = context_get_reg 0 
+       0@ += 0x7C // integer values 
+       if
+        80E1:   not key_pressed 0 17
+       then
+        0DD9: write_mem_addr 0@ value 0.025 size 4 add_ib 0 protect 0
+       end
+       
+        0DD3: context_set_reg 0 value _PLAYER_ACTOR
+        0DD2: context_call_func 6@
+        0DD4: 4@ = context_get_reg 0
+        4@ += 0x4C
+        0DD8: 4@ = read_mem_addr 4@ size 4 fix_ib 0
+    
+        0DD3: context_set_reg 3 value 4.0
+        0DD3: context_set_reg 2 value 156
+        0DD3: context_set_reg 1 value 0
+        0DD3: context_set_reg 0 value 4@
+        0DD2: context_call_func 5@   
+       
+           if 
+            00E1:   player 0 pressed_button 14 //jump
+           then
+            17@ = 0
+             while 17@ < 100
+             wait 0 
+			  0DD9: write_mem_addr 0@ value 0.022 size 4 add_ib 0 protect 0
+			  0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			  0DD2: context_call_func 6@
+			  0DD4: 4@ = context_get_reg 0
+			  4@ += 0x4C
+			  0DD8: 4@ = read_mem_addr 4@ size 4 fix_ib 0
+			  
+			  0DD3: context_set_reg 3 value 4.0
+			  0DD3: context_set_reg 2 value 141
+			  0DD3: context_set_reg 1 value 0
+			  0DD3: context_set_reg 0 value 4@
+			  0DD2: context_call_func 5@
+             end
+            16@ = 0
+            while 16@ < 300
+            wait 0
+			 0DD8: 12@ = read_mem_addr 0x3A1A78 size 4 fix_ib 1
+			 0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			 0DD2: context_call_func 6@
+			 0DD4: 0@ = context_get_reg 0
+			 0@ += 20 // integer values 
+			 0DD8: 1@ = read_mem_addr 0@ size 4 fix_ib 0
+			 0@ += 4 // integer values 
+			 0DD8: 2@ = read_mem_addr 0@ size 4 fix_ib 0
+			 3@ = 0.004 // floating-point values 
+			 1@ *= 0.004 // floating-point values (never used in VC or GTA 3) 
+			 2@ *= 0.004 // floating-point values (never used in VC or GTA 3) 
+			 006B: 1@ *= 12@ // floating-point values 
+			 006B: 2@ *= 12@ // floating-point values 
+			 006B: 3@ *= 12@ // floating-point values
+			 0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			 0DD2: context_call_func 6@
+			 0DD4: 0@ = context_get_reg 0
+			 0@ += 140 //136 // integer values 
+			 0DD9: write_mem_addr 0@ value 1@ size 4 add_ib 0 protect 1
+			 0@ += 4 // integer values 
+			 0DD9: write_mem_addr 0@ value 2@ size 4 add_ib 0 protect 1
+			 0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			 0DD2: context_call_func 6@
+			 0DD4: 0@ = context_get_reg 0
+			 0@ += 0x7C // integer values 
+			 0DD9: write_mem_addr 0@ value 3@ size 4 add_ib 0 protect 1
+			 0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			 0DD2: context_call_func 6@
+			 0DD4: 0@ = context_get_reg 0
+			 0@ += 0x7C // integer values 
+			 0DD9: write_mem_addr 0@ value 0.1 size 4 add_ib 0 protect 1
+			 0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			 0DD2: context_call_func 6@
+			 0DD4: 4@ = context_get_reg 0
+			 4@ += 0x4C
+			 0DD8: 4@ = read_mem_addr 4@ size 4 fix_ib 0
+			 
+			 0DD3: context_set_reg 3 value 4.0
+			 0DD3: context_set_reg 2 value 142
+			 0DD3: context_set_reg 1 value 0
+			 0DD3: context_set_reg 0 value 4@
+			 0DD2: context_call_func 5@
+            end
+           end        
+           
+            0494: get_joystick 0 data_to 7@ 8@ 9@ 10@ 
+            0093: 7@ = integer 7@ to_float
+            0093: 8@ = integer 8@ to_float
+            0DD3: context_set_reg 1 value 7@   //x
+            0DD3: context_set_reg 0 value 8@ //y
+            0DD2: context_call_func 11@
+            0DD4: 9@ = context_get_reg 0
+            0092: 9@ = float 9@ to_integer 
+           
+           if 
+            00E1:   player 0 pressed_button LEFTSTICKY
+           then         
+            if 
+             9@ <> 6
+            then
+			 0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			 0DD2: context_call_func 6@
+			 0DD4: 0@ = context_get_reg 0 
+			 0@ += 0x7C // integer values  78
+			 0DD9: write_mem_addr 0@ value 0.025 size 4 add_ib 0 protect 0
+            
+		     0DD3: context_set_reg 0 value _PLAYER_ACTOR
+		     0DD2: context_call_func 6@
+		     0DD4: 4@ = context_get_reg 0
+		     4@ += 0x4C
+		     0DD8: 4@ = read_mem_addr 4@ size 4 fix_ib 0
+		     
+		     0DD3: context_set_reg 3 value 4.0
+		     0DD3: context_set_reg 2 value 149
+		     0DD3: context_set_reg 1 value 0
+		     0DD3: context_set_reg 0 value 4@
+		     0DD2: context_call_func 5@
+		     0DD8: 12@ = read_mem_addr 0x3A1A78 size 4 fix_ib 1
+		     0DD3: context_set_reg 0 value _PLAYER_ACTOR
+		     0DD2: context_call_func 6@
+		     0DD4: 0@ = context_get_reg 0
+		     0@ += 0x14 // integer values 
+		     0DD8: 13@ = read_mem_addr 0@ size 4 fix_ib 0
+		     0@ += 4 // integer values 
+		     0DD8: 14@ = read_mem_addr 0@ size 4 fix_ib 0
+		     13@ *= 0.05 // floating-point values (never used in VC or GTA 3) 
+		     14@ *= 0.05 // floating-point values (never used in VC or GTA 3)
+		     006B: 13@ *= 12@ // floating-point values 
+		     006B: 14@ *= 12@ // floating-point values 
+		     0DD3: context_set_reg 0 value _PLAYER_ACTOR
+		     0DD2: context_call_func 6@
+		     0DD4: 0@ = context_get_reg 0
+		     0@ += 0x78 //116 // integer values
+		     0DD9: write_mem_addr 0@ value 14@ size 4 add_ib 0 protect 1
+		     0@ -= 4 // integer values 
+		     0DD9: write_mem_addr 0@ value 13@ size 4 add_ib 0 protect 1
+            else
+			  0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			  0DD2: context_call_func 6@
+			  0DD4: 0@ = context_get_reg 0 
+			  0@ += 0x7C // integer values  78
+			  0DD9: write_mem_addr 0@ value -0.025 size 4 add_ib 0 protect 0
+            end
+           end
+           
+			if or
+			9@ == 4
+			9@ == 5
+			then
+			0170: 10@ = player _player_char z_angle
+			10@ += 1.0
+			0171: set_player _player_char z_angle_to 10@
+			end
+			
+			if or
+			9@ == 1
+			9@ == 2
+			then
+			0170: 10@ = player _player_char z_angle
+			10@ -= 1.0
+			0171: set_player _player_char z_angle_to 10@
+			end         
+                  
+       
+           if
+            00E1:   player 0 pressed_button 16  //sprint
+           then
+			 0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			 0DD2: context_call_func 6@
+			 0DD4: 0@ = context_get_reg 0 
+			 0@ += 0x7C // integer values  78
+			 0DD9: write_mem_addr 0@ value 0.025 size 4 add_ib 0 protect 0
+           
+			0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			0DD2: context_call_func 6@
+			0DD4: 4@ = context_get_reg 0
+			4@ += 76
+			0DD8: 4@ = read_mem_addr 4@ size 4 fix_ib 0
+			0DD3: context_set_reg 3 value 4.0
+			0DD3: context_set_reg 2 value 148
+			0DD3: context_set_reg 1 value 0
+			0DD3: context_set_reg 0 value 4@
+			0DD2: context_call_func 5@
+			0DD8: 12@ = read_mem_addr 0x3A1A78 size 4 fix_ib 1
+			0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			0DD2: context_call_func 6@
+			0DD4: 0@ = context_get_reg 0
+			0@ += 20 // integer values 
+			0DD8: 13@ = read_mem_addr 0@ size 4 fix_ib 0
+			0@ += 4 // integer values 
+			0DD8: 14@ = read_mem_addr 0@ size 4 fix_ib 0
+			13@ *= 0.12 // floating-point values (never used in VC or GTA 3) 
+			14@ *= 0.12 // floating-point values (never used in VC or GTA 3) 
+			006B: 13@ *= 12@ // floating-point values 
+			006B: 14@ *= 12@ // floating-point values 
+			0DD3: context_set_reg 0 value _PLAYER_ACTOR
+			0DD2: context_call_func 6@
+			0DD4: 0@ = context_get_reg 0
+			0@ += 0x78 //116 // integer values
+			0DD9: write_mem_addr 0@ value 14@ size 4 add_ib 0 protect 1
+			0@ -= 4 // integer values 
+			0DD9: write_mem_addr 0@ value 13@ size 4 add_ib 0 protect 1 
+           end           
+      end
+   end
+end
+
+:_ZN8CGeneral11GetATanOfXYEff
+hex
+"_ZN8CGeneral11GetATanOfXYEff" 00
+end
+
+:_ZN6CPools6GetPedEi
+hex
+"_ZN6CPools6GetPedEi" 00
+end
+
+:_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf
+hex
+"_ZN12CAnimManager14BlendAnimationEP7RpClump12AssocGroupId11AnimationIdf" 00
+end

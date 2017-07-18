@@ -1,0 +1,107 @@
+{$CLEO}
+0000:
+var 
+10@: int
+12@: int 
+13@: int 
+14@: int
+15@: int
+end
+
+0A8D: 14@ = read_memory 0x8E2BEC size 4 virtual_protect 1  // dwTimesBusted
+0A8D: 15@ = read_memory 0x8E2BDC size 4 virtual_protect 1  // dwTimesWasted
+while true
+wait 0  
+0A8D: 12@ = read_memory 0x8E2BEC size 4 virtual_protect 1  // dwTimesBusted
+0A8D: 13@ = read_memory 0x8E2BDC size 4 virtual_protect 1  // dwTimesWasted
+
+    if or
+     12@ > 14@   
+     13@ > 15@
+    then
+       5@ = false
+       0AC8: 0@ = allocate_memory_size 260
+       0A8E: 2@ = 0@ + 0 // int
+       0A96: 1@ = actor $PLAYER_ACTOR struct
+       1@ += 0x408
+        for 13@ = 1 to 12
+          10@ = 13@ //weapon id                   
+          0419: 11@ = player $PLAYER_CHAR weapon 10@ ammo
+          
+          if 
+           11@ > 0
+          then
+           5@ = true
+          end            
+          
+          0A8C: write_memory 2@ size 4 value 10@ virtual_protect 1  //write weapon id
+          2@ += 4
+          0A8C: write_memory 2@ size 4 value 11@ virtual_protect 1  //write ammo
+          2@ += 4
+        end
+    
+        while 8256:  not player $player_char defined
+         wait 0
+        end  
+        while 016B:   fading
+         wait 0
+        end
+        16@ = 0
+        0ACA: show_text_box "Pay $2000 bribe to get back your weapons? ~w~Press the~h~ ~k~~PED_FIREWEAPON~ ~w~button to buy. ~k~~VEHICLE_ENTER_EXIT~ ~w~button to exit."
+        while 16@ < 10000
+        wait 0 
+          if
+           00E1:   player 0 pressed_button 17
+          then
+           010B: 3@ = player $PLAYER_CHAR money 
+            if
+             3@ < 2000
+            then
+             0ACA: show_text_box "You need ~h~$2000~w~ to buy back your weapons."
+             break
+            end
+ 
+            if
+             5@ = false
+            then
+             0ACA: show_text_box "You don't have any weapons to return."
+             break
+            end 
+            
+          0109: player $PLAYER_CHAR money += -2000 
+          0A8E: 2@ = 0@ + 0 // int
+           for 13@ = 1 to 10
+             0A8D: 10@ = read_memory 2@ size 4 virtual_protect 1 //weapon id
+             2@ += 4
+             0A8D: 11@ = read_memory 2@ size 4 virtual_protect 1 //ammo for that weapon
+             2@ += 4
+              if
+               11@ > 0
+              then
+                0604: 4@ = weapon 10@ model
+                0247: request_model 4@
+                038B: load_requested_models
+                01B1: give_player $player_char weapon 10@ ammo 11@ // Load the weapon model before using this
+                0249: release_model 4@
+              end
+           end
+          01B8: set_player $PLAYER_CHAR armed_weapon_to 0 
+          03E6: remove_text_box  
+          break
+          end
+          
+          if
+           00E1:   player 0 pressed_button 15
+          then
+           03E6: remove_text_box 
+           break
+          end
+        end
+        
+    0AC9: free_allocated_memory 0@     
+    end
+    
+    
+0A8D: 14@ = read_memory 0x8E2BEC size 4 virtual_protect 1  // dwTimesBusted
+0A8D: 15@ = read_memory 0x8E2BDC size 4 virtual_protect 1  // dwTimesWasted
+end

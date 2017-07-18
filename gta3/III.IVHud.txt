@@ -1,0 +1,172 @@
+{$CLEO}
+0000:
+05F7: 0@ = label @ret_8 offset
+0606: set_memory_offset memory_pointer 0x504947 memory_to_point 0@ virtual_protect 1
+05F7: 0@ = label @aModelsHud_txd offset
+0A8C: write_memory 0x504900 size 4 value 0@ virtual_protect 1
+05E1: call 0x5048F0 num_params 0 pop 0
+0A8C: write_memory 0x504900 size 4 value 0x005FDB2C virtual_protect 1
+
+05F7: 13@ = label @87_0 offset
+05DF: write_memory 13@ size 4 value 87.0 virtual_protect 1 
+05DF: write_memory 0x5061BB{III} size 4 value 13@ virtual_protect 1   
+05DF: write_memory 0x5FDBB8{III} size 4 value 86.0 virtual_protect 1   // Weapon icon distance from right
+05DF: write_memory 0x5FDBB0{III} size 4 value 46.0 virtual_protect 1   // Weapon icon scale
+
+05DF: write_memory 0x5083B6{1.0} size 1 value 0xB4 virtual_protect 1     //radardisc color
+05DF: write_memory 0x5083B8{1.0} size 1 value 0xB4 virtual_protect 1     //radardisc color
+05DF: write_memory 0x5083BA{1.0} size 1 value 0xB4 virtual_protect 1     //radardisc color
+
+05DF: write_memory 0x5083E4{1.0} size 1 value 0xB4 virtual_protect 1     //radardisc color
+05DF: write_memory 0x5083E6{1.0} size 1 value 0xB4 virtual_protect 1     //radardisc color
+05DF: write_memory 0x5083E8{1.0} size 1 value 0xB4 virtual_protect 1     //radardisc color
+
+/*
+05DF: write_memory 0x5062C7 size 1 value 0x02 virtual_protect 1     //ammo font
+05DF: write_memory 0x5FDBA6 size 1 value 0x20 virtual_protect 1
+
+05DF: write_memory 0x50632D size 1 value 0xFF virtual_protect 1   
+05DF: write_memory 0x50632F size 1 value 0xFF virtual_protect 1     //ammo color
+05DF: write_memory 0x506331 size 1 value 0xFF virtual_protect 1      
+*/  
+
+05DF: write_memory 0x5FDBC8 size 4 value 62.0 virtual_protect 1   // Weapon ammo text distance from right
+05DF: write_memory 0x5FDBC4{III} size 4 value 135.0 virtual_protect 1   // Weapon ammo text distance from top 
+
+
+05DF: write_memory 0x5FDBB4{III} size 4 value 40.0 virtual_protect 1   // Some stuff distance from right
+05DF: write_memory 0x5FDB9C{III} size 4 value 160.0 virtual_protect 1   //Some stuff distance from top 
+
+05DF: write_memory 0x5FDC30{III} size 4 value 182.0 virtual_protect 1   //status text distance from top 
+
+05DF: write_memory 0x5FDB90{III} size 4 value 0.5909090638 virtual_protect 1   // HUD Text horizontal scale
+05DF: write_memory 0x5FDB8C{III} size 4 value 1.136363626 virtual_protect 1   // HUD text vertical scale
+
+05DF: write_memory 0x5FDB94{III} size 4 value 39.0 virtual_protect 1   // Money distance from top
+//05DF: write_memory 0x5FDB9C{III} size 4 value 40.0 virtual_protect 1   // Money distance from right
+05DF: write_memory 0x505F71{III} size 4 value 0x005EC71C virtual_protect 1   // Money distance from right fixed
+05DF: write_memory 0x50600D{III} size 4 value 0x005EC71C virtual_protect 1   // Money distance from right fixed
+
+05DF: write_memory 0x5FDC20{III} size 4 value 60.0 virtual_protect 1   // Time distance from top
+05DF: write_memory 0x5FDC24{III} size 4 value 40.0 virtual_protect 1   // Time distance from right
+
+05DF: write_memory 0x5FDBD4{III} size 4 value 1000.0 virtual_protect 1   // Health and Armor distance from top
+
+05DF: write_memory 0x5FDBE8{III} size 4 value 57.0 virtual_protect 1   //  Wanted stars distance from right
+05DF: write_memory 0x5FDBEC{III} size 4 value 17.0 virtual_protect 1   //  Wanted stars distance from top
+05DF: write_memory 0x5FDBF0{III} size 4 value 20.0 virtual_protect 1   //  wanted level stars X spacing between stars                                   
+
+05DF: write_memory 0x5ECD08{III} size 4 value 138.0 virtual_protect 1   //Draw messages distance from top
+05DF: write_memory 0x5ECCFC{III} size 4 value 139.0 virtual_protect 1   //Draw messages distance from top shadow
+05DF: write_memory 0x5ECD18{III} size 4 value 168.0 virtual_protect 1   //DRaw messages distance from top
+05DF: write_memory 0x5ECD14{III} size 4 value 169.0 virtual_protect 1   //DRaw messages distance from top shadow
+
+05DF: write_memory 0x5FDB87 size 1 value 0x34 virtual_protect 1            // money digits amount (4)
+
+05F7: 0@ = label @radardisc offset
+   
+while true
+wait 0
+  0225: 1@ = player $player_char health
+  04DD: 2@ = actor $player_actor armour
+
+  0B14: 3@ = 1@ % 5
+  0B14: 4@ = 2@ % 5
+  
+  if
+   3@ <> 0
+  then
+   if
+    1@ > -1
+   then
+    0A8F: 5@ = 5 - 3@ // int
+    0A8E: 1@ = 1@ + 5@ // int
+   else
+    0A8F: 5@ = 0 - 3@ // int
+    0A8E: 1@ = 1@ + 5@ // int
+   end 
+  end
+  
+  if
+   4@ <> 0
+  then
+   if
+    2@ > -1
+   then
+    0A8F: 5@ = 5 - 4@ // int
+    0A8E: 2@ = 2@ + 5@ // int
+   else
+    0A8F: 5@ = 0 - 4@ // int
+    0A8E: 2@ = 2@ + 5@ // int
+   end 
+  end       
+  
+  if
+   1@ > 100
+  then
+   1@ = 100
+  end
+  
+  if
+   2@ > 100
+  then
+   2@ = 100
+  end
+  
+  0AD3: 0@ = format "ih%03da%03d" 1@ 2@
+  //0ACD: show_text_highpriority 0@ time 1
+
+  0AA6: call_method 0x51EA70 struct 0x95CBD8 num_params 2 pop 0 0@ 0@
+  0AA5: call 0x527910 num_params 0 pop 0
+  0AA6: call_method 0x51EA70 struct 0x95CBD8 num_params 2 pop 0 0@ 0@
+  0AA5: call 0x527910 num_params 0 pop 0
+
+    if and
+     00E0:   player $player_char driving
+     05EE:  key_pressed 88 // X
+    then
+     041E: set_radio_station 10 -1
+    end
+    
+    01C0: 12@ = player $player_char wanted_level
+    05E0: 13@ = read_memory 0x5FDBEC size 4 virtual_protect 1
+    if and
+    not 13@ == 17.0
+     12@ > 0
+    then
+     05DF: write_memory 0x5FDBEC size 4 value 17.0 virtual_protect 1
+    end
+
+    if and
+     not 13@ == 1000.0
+     12@ == 0
+    then
+     05DF: write_memory 0x5FDBEC size 4 value 1000.0 virtual_protect 1
+    end
+
+end
+
+:87_0
+hex
+00 00 00 00
+end
+
+:ret_14
+hex
+C2 1400
+end
+
+:ret_8
+hex
+C2 0800
+end
+
+:radardisc
+hex
+"radardisc" 00
+end
+
+:aModelsHud_txd
+hex
+"MODELS/IVHUD.TXD" 00
+end

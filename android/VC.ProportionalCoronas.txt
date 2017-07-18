@@ -1,0 +1,21 @@
+{$CLEO .csa}
+thread 'PRCOR'
+0000:
+0DD7: 1@ = get_image_base
+1@ += 1
+
+0DD0: 0@ = get_label_addr @_ZN7CSprite15CalcScreenCoorsERK5RwV3dPS0_PfS4_b
+0DD1: 0@ = get_func_addr_by_cstr_name 0@
+0062: 0@ -= 1@ // (int)
+
+0@ += 0xE8
+0DD9: write_mem_addr {0x1FDBF4} 0@ value 0xD8 size 1 add_ib 1 protect 1
+0@ += 0x8
+0DD9: write_mem_addr {0x1FDBFC} 0@ value 0x88 size 1 add_ib 1 protect 1
+
+end_thread
+
+:_ZN7CSprite15CalcScreenCoorsERK5RwV3dPS0_PfS4_b
+hex
+"_ZN7CSprite15CalcScreenCoorsERK5RwV3dPS0_PfS4_b" 00
+end

@@ -1,0 +1,306 @@
+{$CLEO .cs}
+0000:
+if
+ 8AA9: not is_game_version_original
+then
+ 0A93: end_custom_thread
+end
+
+const
+LEFTSTICKX            = 0  //<LS>
+LEFTSTICKY            = 1  //LS^
+RIGHTSTICKX           = 2  //<RS>
+RIGHTSTICKY           = 3  //RS^
+LEFTSHOULDER1         = 4  //LB
+LEFTSHOULDER2         = 5  //LT
+RIGHTSHOULDER1        = 6  //RB
+RIGHTSHOULDER2        = 7  //RT
+DPADUP                = 8  //UP
+DPADDOWN              = 9  //DOWN
+DPADLEFT              = 10 //LEFT
+DPADRIGHT             = 11 //RIGHT
+START                 = 12 //START
+SELECT                = 13 //SELECT
+SQUARE                = 14 //X
+TRIANGLE              = 15 //Y
+CROSS                 = 16 //A
+CIRCLE                = 17 //B
+LEFTSHOCK             = 18 //LS
+RIGHTSHOCK            = 19 //RS
+GUIDE                 = 20 //Guide
+end
+
+0A8D: 0@ = read_memory 0x584C78 size 4 virtual_protect 1
+008D: 0@ = integer_to_float 0@ 
+1@ = 30.0
+0015: 1@ /= 0@ // floating-point values 
+2@ = 1.666599989
+0069: 2@ *= 1@ // floating-point values 
+0A8C: write_memory 0x495B41 size 4 value 2@ virtual_protect 1
+
+0AB1: call_scm_func @RestoreDriveByLeft 0                                                                                                                                                                                  
+0AB1: call_scm_func @RestoreDriveByRight 0
+0AB1: call_scm_func @restore 0
+
+while true
+wait 0
+0A8D: 12@ = read_memory 0x5F03D8 size 1 virtual_protect 1 //controls
+0A8D: 9@ = read_memory 0x9412F4 size 4 virtual_protect 1  //RC check
+0AB1: call_scm_func @key_check 0 8@ 
+0A96: 10@ = actor $PLAYER_ACTOR struct
+10@ += 0x224
+0A8D: 10@ = read_memory 10@ size 1 virtual_protect 1 // player current status
+   if and
+    10@ <> 0x36
+    8@ == true
+    9@ == 0
+    12@ == 1
+    00E0:   player $PLAYER_CHAR driving
+   then
+    0A8D: 13@ = read_memory 0x006FADD0 size 4 virtual_protect 1 //current view  
+    if or
+     13@ == 1.0
+     13@ == 2.0
+    then
+     if
+      8124: not last_input_was_pad 
+     then 
+      0A8D: 14@ = read_memory 0x8809F8 size 4 virtual_protect 1 //X
+      0A8D: 15@ = read_memory 0x8809FC size 4 virtual_protect 1 //Y
+     else
+      if or
+       00E1:   player 0 pressed_button RIGHTSTICKX 
+       00E1:   player 0 pressed_button RIGHTSTICKY
+      then
+       14@ = 1
+      else
+       14@ = 0
+      end
+     end
+      if or
+       14@ <> 0
+       15@ <> 0
+      then
+       16@ = 0
+       0AB1: call_scm_func @toggle 0
+       while 16@ < 2000
+       wait 0
+        if
+         8124: not last_input_was_pad 
+        then 
+         0A8D: 14@ = read_memory 0x8809F8 size 4 virtual_protect 1 //X
+         0A8D: 15@ = read_memory 0x8809FC size 4 virtual_protect 1 //Y
+        else
+         if or
+          00E1:   player 0 pressed_button RIGHTSTICKX 
+          00E1:   player 0 pressed_button RIGHTSTICKY
+         then
+          14@ = 1
+         else
+          14@ = 0
+         end
+        end
+        if or
+         14@ <> 0
+         15@ <> 0
+        then
+         16@ = 0
+        end
+        if
+         00E0:   player $PLAYER_CHAR driving
+        then                                          
+         03C1: 13@ = player $player_char car_no_save
+         //drivebys
+         04C3: create_coordinate 1@ 2@ 3@ from_car 13@ offset 20.0 0.0 0.0 //0407 in VC
+         04C3: create_coordinate 4@ 5@ 6@ from_car 13@ offset -20.0 0.0 0.0 //0407 in VC    
+         02E3: 13@ = car 13@ speed
+        else
+         break
+        end
+        if
+         8124: not last_input_was_pad
+        then
+         7@ = 17
+        else
+         7@ = LEFTSHOULDER1
+        end
+        if and
+         00E1:   player 0 pressed_button 7@ 
+         00C2:   sphere_onscreen 1@ 2@ 3@ radius 1.0
+         80C2: not  sphere_onscreen 4@ 5@ 6@ radius 1.0
+        then
+         0AB1: call_scm_func @AllowDriveByRight 0
+        else
+          if
+           80C2: not  sphere_onscreen 4@ 5@ 6@ radius 1.0
+          then
+           0AB1: call_scm_func @RestoreDriveByRight 0
+          end
+        end
+        if and
+         00E1:   player 0 pressed_button 7@
+         00C2:   sphere_onscreen 4@ 5@ 6@ radius 1.0
+         80C2: not  sphere_onscreen 1@ 2@ 3@ radius 1.0
+        then
+         0AB1: call_scm_func @AllowDriveByLeft 0
+        else
+         if 
+          80C2: not  sphere_onscreen 1@ 2@ 3@ radius 1.0
+         then
+          0AB1: call_scm_func @RestoreDriveByLeft 0  
+         end
+        end
+        if or
+         00E1: player 0 pressed_button 7@
+         13@ == 0.0
+        then
+         16@ = 0
+        end
+        0A96: 10@ = actor $PLAYER_ACTOR struct
+        10@ += 0x224
+        0A8D: 10@ = read_memory 10@ size 1 virtual_protect 1 // player current status
+        if
+         10@ == 0x36
+        then
+         break
+        end
+       0A8D: 9@ = read_memory 0x9412F4 size 4 virtual_protect 1  //RC check
+        if
+         9@ <> 0
+        then
+         break
+        end
+        0AB1: call_scm_func @key_check 0 8@ 
+        if
+         8@ == false
+        then
+         break
+        end 
+       end //while 16@ < 2000
+       0AB1: call_scm_func @RestoreDriveByLeft 0                                                                                                                                                                                  
+       0AB1: call_scm_func @RestoreDriveByRight 0
+       0AB1: call_scm_func @restore 0 
+      end
+    end
+   else
+    0A8D: 11@ = read_memory 0x0046D4A6 size 1 virtual_protect 1
+    if
+     11@ == 0x74
+    then
+     0AB1: call_scm_func @restore 0
+    end 
+   end
+end
+
+
+:toggle
+03C1: 6@ = player $player_char car_no_save  
+05E7: 7@ = car 6@ struct
+7@ += 0x1F6
+0A8D: 8@ = read_memory 7@ size 1 virtual_protect 1 //car flag
+
+0373: set_camera_directly_behind_player 
+ 
+//toggle movement
+0A8C: write_memory 0x0046D4A6 size 1 value 0x74 virtual_protect 1  //0x75
+
+//fix car twitching
+0A8C: write_memory 0x495B15 size 4 value 0x495B41 virtual_protect 1
+0A8C: write_memory 0x495B24 size 4 value 0x495B41 virtual_protect 1
+0A8C: write_memory 0x495B36 size 4 value 0x495B41 virtual_protect 1
+
+//distances
+if or
+8@ == 32
+8@ == 40
+then
+0A8C: write_memory 0x5F07EC size 4 value 1.5 virtual_protect 0
+0A8C: write_memory 0x5F07DC size 4 value 6.0 virtual_protect 0
+else
+0A8C: write_memory 0x5F07EC size 4 value 3.0 virtual_protect 0
+0A8C: write_memory 0x5F07DC size 4 value 9.0 virtual_protect 0
+end
+
+//patching lineOfsight
+0A8C: write_memory 0x00460565 size 1 value 0x00 virtual_protect 1  //Vehicle
+
+//patching camera motion
+0A8C: write_memory 0x004709D7 size 1 value 0x00 virtual_protect 1
+0A8C: write_memory 0x00470BE3 size 1 value 0x00 virtual_protect 1
+
+//hiding crosshair 
+0A8C: write_memory 0x50551F size 4 value 0x005EE7DC virtual_protect 1
+0AB2: ret 0
+
+
+:restore
+//toggle movement *restore
+0A8C: write_memory 0x0046D4A6 size 1 value 0x75 virtual_protect 1  //0x75
+
+//fix car twitching *restore
+0A8C: write_memory 0x495B15 size 4 value 0x8E2CB4 virtual_protect 1
+0A8C: write_memory 0x495B24 size 4 value 0x8E2CB4 virtual_protect 1
+0A8C: write_memory 0x495B36 size 4 value 0x8E2CB4 virtual_protect 1
+
+//distances *restore
+0A8C: write_memory 0x5F07EC size 4 value 0.8 virtual_protect 0
+0A8C: write_memory 0x5F07DC size 4 value 2.0 virtual_protect 0
+
+//patching lineOfsight *restore
+0A8C: write_memory 0x00460565 size 1 value 0x01 virtual_protect 1  //Vehicle
+
+//patching camera motion *restore
+//0A8C: write_memory 0x004709D7 size 1 value 0x01 virtual_protect 1
+//0A8C: write_memory 0x00470BE3 size 1 value 0x01 virtual_protect 1
+
+//hiding crosshair *restore
+0A8C: write_memory 0x50551F size 4 value 0x006FAE98 virtual_protect 1
+0AB2: ret 0
+
+:key_check
+if
+8124: not last_input_was_pad
+then
+ if and
+  80E1: not  key_pressed 0 2
+  80E1: not  key_pressed 0 3
+  80E1: not  key_pressed 0 5
+  80E1: not  key_pressed 0 7
+  80E1: not  key_pressed 0 13
+ then
+  0@ = true
+ else
+  0@ = false                                                                                                                                                                                                   
+ end
+else
+ if and
+  80E1: not  key_pressed 0 CIRCLE
+  80E1: not  key_pressed 0 SELECT
+  80E1: not  key_pressed 0 RIGHTSHOULDER1
+ then
+  0@ = true
+ else
+  0@ = false                                                                                                                                                                                                   
+ end
+end
+0AB2: ret 1 0@
+
+:AllowDriveByRight
+0A8C: write_memory 0x5640AF size 1 value 0x74 virtual_protect 1  //originally 0x75     CAutomobile
+0AB2: ret 0
+
+:RestoreDriveByRight
+0A8C: write_memory 0x5640AF size 1 value 0x75 virtual_protect 1  //originally 0x75     CAutomobile
+0AB2: ret 0
+
+:AllowDriveByLeft
+0A8C: write_memory 0x5640C0 size 1 value 0x75 virtual_protect 1  //originally 0x74     CAutomobile
+0A8C: write_memory 0x5640AF size 1 value 0x74 virtual_protect 1  //originally 0x75     CAutomobile
+0A8C: write_memory 0x5641B8 size 3 value 0x909090 virtual_protect 1   //originally 0x8924048A CAutomobile
+0AB2: ret 0
+
+:RestoreDriveByLeft
+0A8C: write_memory 0x5640C0 size 1 value 0x74 virtual_protect 1  //originally 0x74  CAutomobile
+0A8C: write_memory 0x5640AF size 1 value 0x75 virtual_protect 1  //originally 0x75  CAutomobile
+0A8C: write_memory 0x5641B8 size 4 value 0x8924048A virtual_protect 1 //restore     CAutomobile
+0AB2: ret 0

@@ -1,0 +1,10 @@
+{$CLEO .cs}
+0000:
+for 0@ = #LANDSTAL to #UTILTR1
+    0006: 1@ = 0x85D2CB
+    0085: 2@ = 0@
+    0012: 2@ *= 36
+    005A: 1@ += 2@
+    0A8C: write_memory 1@ size 1 value 0 virtual_protect 1
+end
+0A93: end_custom_thread

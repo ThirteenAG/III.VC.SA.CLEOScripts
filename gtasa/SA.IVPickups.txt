@@ -1,0 +1,103 @@
+{$CLEO .cs}
+0000:
+//0A8C: write_memory 0x00536541 size 5 value 0x90 virtual_protect 1  //CPickups::DoPickUpEffects(CEntity *)
+0A8C: write_memory 0x00457485 size 3 value 0x90 virtual_protect 1 //object->__parent.physical.entity.placeable.m_pCoords->pos.z = outVec.z;
+0A8C: write_memory 0x005361B5 size 4 value 0x537628 virtual_protect 1   // movzx edx,word ptr [008CD59C]
+
+0A8C: write_memory 0x455C07 size 1 value 0xE9 virtual_protect 1
+0A8C: write_memory 0x455C08 size 4 value 0x00000209 virtual_protect 1 
+
+0A8C: write_memory 0x45584E size 5 value 0x90 virtual_protect 1 //coronas
+
+while true
+wait 0
+
+9@ = 0x9788C0         
+10@ = 0x97D620
+
+for 0@ = 9@ to 10@ step 0x20 
+    0A8E: 5@ = 0@ + 0x10 // int
+    0A8D: 1@ = read_memory 5@ size 2 virtual_protect 0  //x
+    1@ *= 0.125
+    0A8E: 5@ = 0@ + 0x12 // int
+    0A8D: 2@ = read_memory 5@ size 2 virtual_protect 0  //y
+    2@ *= 0.125
+    0A8E: 5@ = 0@ + 0x14 // int
+    0A8D: 3@ = read_memory 5@ size 2 virtual_protect 0  //z
+    3@ *= 0.125
+    0A8E: 5@ = 0@ + 0x4 // int 
+    0A8D: 6@ = read_memory 5@ size 4 virtual_protect 0  //6@ - [POINTER] - CObjectVC* pObject
+    0A8E: 5@ = 0@ + 0x18 // int
+    0A8D: 7@ = read_memory 5@ size 2 virtual_protect 0 //7@ - [WORD] - wModelId
+      if and
+       1@ <> 0.0
+       2@ <> 0.0
+       3@ <> 0.0
+       6@ <> 0
+      then
+       0AEC: 8@ = object_struct 6@ handle
+        if
+         03CA:   object 8@ exists
+        then
+        01BB: store_object 8@ position_to 1@ 2@ 3@
+         if
+          00EC:   actor $PLAYER_ACTOR sphere 0 near_point 1@ 2@ radius 80.0 80.0
+         then
+          if or
+           00EC:   actor $PLAYER_ACTOR sphere 0 near_point 1@ 2@ radius 45.0 45.0
+           02CC:   object 8@ bounding_sphere_visible
+          then
+           02CE: 4@ = ground_z 1@ 2@ 3@
+           inc(4@, 0.05)
+           01BC: put_object 8@ at 1@ 2@ 4@
+            if
+             7@ <> 1212 //#MONEY
+            then
+             0453: set_object 8@ XY_rotation 90.0 0.0 angle 134.0
+            else
+             0453: set_object 8@ XY_rotation 0.0 0.0 angle 5.0 
+            end
+            0AB1: call_scm_func @createParticleForWeapon params_count 4 wModelId 7@ coords 1@ 2@ 4@ 
+          end
+         end
+        end
+      end
+end // for
+
+end
+
+:createParticleForWeapon
+for 10@ = 0 to 46
+0AA7: call_function 0x454AC0 num_params 1 pop 1 10@ 12@    //weapon id to model id
+ if
+  003B: 0@ == 12@
+ then
+  0085: 4@ = 10@
+  break
+ end 
+end
+
+if
+ 4@ == 0
+then
+ 4@ = 37
+end
+
+4@ *= 8
+4@ += 0x688098
+0A8D: 5@ = read_memory 4@ size 1 virtual_protect 0
+4@ += 1
+0A8D: 6@ = read_memory 4@ size 1 virtual_protect 0
+4@ += 1
+0A8D: 7@ = read_memory 4@ size 1 virtual_protect 0
+
+if
+ 0@ == 1212 //#MONEY
+then
+ 5@ = 0
+ 6@ = 155
+ 7@ = 0
+end 
+ 
+016F: create_particle 3 rotation_factor 0.0 size 0.5 intensity 255 color 255 6@ 7@ at 1@ 2@ 3@
+0AB2: ret 0

@@ -1,0 +1,48 @@
+{$CLEO}
+0000:
+wait 200
+if
+$7854 <> 0
+then
+0A93: end_custom_thread
+end
+while true
+wait 200
+0AAA: 0@ = thread 'ICECRE1' pointer
+    if and
+    00DE:   player $player_char driving_vehicle_type #MRWHOOP
+    8603: not is_camera_in_widescreen_mode
+    0@ <> 0
+    $ONMISSION == 1
+    then
+    0ACA: show_text_box "Press the ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~button to activate a Trip Skip." 
+       17@ = 0
+       while 17@ < 20000
+       wait 0
+       0AAA: 0@ = thread 'ICECRE1' pointer 
+          if and
+          0@ <> 0
+          00E1:   player 0 pressed_button 19
+          00E0:   player $player_char driving
+          then
+          03E6: remove_text_box
+          04D3: get_nearest_car_path_coords_from 419.2134 -398.9451 9.9636 type 2 store_to 11@ 12@ 13@
+          03C1: 10@ = player $player_char car_no_save 
+          00AB: put_car 10@ at 11@ 12@ 13@
+          0A8C: write_memory 0x828D3C size 4 value 46 virtual_protect 1
+          010D: set_player $player_char wanted_level_to 2
+          while 00E0:   player $player_char driving
+          wait 0
+          end
+          end
+          
+          if or
+          80E0: not  player $player_char driving
+          0@ == 0
+          then
+          Break
+          end
+       end
+    03E6: remove_text_box       
+    end    
+end

@@ -1,0 +1,232 @@
+{$CLEO}
+0000:
+const
+LEFTSTICKX            = 0  //<LS>
+LEFTSTICKY            = 1  //LS^
+RIGHTSTICKX           = 2  //<RS>
+RIGHTSTICKY           = 3  //RS^
+LEFTSHOULDER1         = 4  //LB
+LEFTSHOULDER2         = 5  //LT
+RIGHTSHOULDER1        = 6  //RB
+RIGHTSHOULDER2        = 7  //RT
+DPADUP                = 8  //UP
+DPADDOWN              = 9  //DOWN
+DPADLEFT              = 10 //LEFT
+DPADRIGHT             = 11 //RIGHT
+START                 = 12 //START
+SELECT                = 13 //SELECT
+SQUARE                = 14 //X
+TRIANGLE              = 15 //Y
+CROSS                 = 16 //A
+CIRCLE                = 17 //B
+LEFTSHOCK             = 18 //LS
+RIGHTSHOCK            = 19 //RS
+GUIDE                 = 20 //Guide
+end
+
+while true
+wait 0
+   if and
+    00E0:   player $PLAYER_CHAR driving 
+    00E1:   player 0 pressed_button 15
+   then
+    03C1: 10@ = player $player_char car_no_save 
+    if
+     02BF:   car 10@ sunk
+    then
+     03E2: make_actor $PLAYER_ACTOR exit_car
+    end
+   end
+   
+   if and
+    04AD:   actor $PLAYER_ACTOR in_water 
+    8184: not  actor $PLAYER_ACTOR health >= 1
+   then
+     while 8184: not  actor $PLAYER_ACTOR health >= 1
+     wait 0
+     end
+    0054: store_player $player_char position_to 0@ 1@ 2@
+    00A1: put_actor $PLAYER_ACTOR at 0@ 1@ 2@
+   end
+
+
+   if and
+    0256:   player $PLAYER_CHAR defined 
+    80DF:   not actor $PLAYER_ACTOR driving 
+    0184:   actor $PLAYER_ACTOR health >= 1
+   then
+      if
+       04AD:   actor $PLAYER_ACTOR in_water 
+      then
+       0A96: 0@ = actor $PLAYER_ACTOR struct 
+       0@ += 0x78 // integer values 
+       0A8C: write_memory 0@ size 4 value 0.025 virtual_protect 0
+       
+       0A96: 4@ = actor $PLAYER_ACTOR struct 
+       4@ += 76 // integer values 
+       0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+       0AA5: call 0x405640 num_params 4 pop 4 4.0 156 0 4@  
+       /*0A96: 9@ = actor $PLAYER_ACTOR struct 
+       9@ += 0x244 // integer values 
+       0A8C: write_memory 9@ size 4 value 12 virtual_protect 0*/ 
+       
+           if 
+            00E1:   player 0 pressed_button 14 //jump
+           then
+            17@ = 0
+             while 17@ < 100
+             wait 0 
+              0A8C: write_memory 0@ size 4 value 0.022 virtual_protect 0 
+              0A96: 4@ = actor $PLAYER_ACTOR struct 
+              4@ += 0x4C // integer values 
+              0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+              0AA5: call 0x405640 num_params 4 pop 4 4.0 141 0 4@
+             end
+            16@ = 0
+            while 16@ < 300
+            wait 0
+             0A8D: 12@ = read_memory 0x975424 size 4 virtual_protect 0 
+             0A96: 0@ = actor $PLAYER_ACTOR struct 
+             0@ += 0x14 // integer values 
+             0A8D: 1@ = read_memory 0@ size 4 virtual_protect 0 
+             0@ += 4 // integer values 
+             0A8D: 2@ = read_memory 0@ size 4 virtual_protect 0 
+             3@ = 0.004 // floating-point values 
+             1@ *= 0.004 // floating-point values  
+             2@ *= 0.004 // floating-point values
+             006B: 1@ *= 12@ // floating-point values 
+             006B: 2@ *= 12@ // floating-point values 
+             006B: 3@ *= 12@ // floating-point values 
+             0A96: 0@ = actor $PLAYER_ACTOR struct 
+             0@ += 0x88 // integer values 
+             0A8C: write_memory 0@ size 4 value 1@ virtual_protect 0 
+             0@ += 0x4 // integer values 
+             0A8C: write_memory 0@ size 4 value 2@ virtual_protect 0 
+             0A96: 0@ = actor $PLAYER_ACTOR struct 
+             0@ += 0x78 // integer values 
+             0A8C: write_memory 0@ size 4 value 3@ virtual_protect 0 
+             0A96: 0@ = actor $PLAYER_ACTOR struct 
+             0@ += 0x78 // integer values 
+             0A8C: write_memory 0@ size 4 value 0.1 virtual_protect 0 
+             0A96: 4@ = actor $PLAYER_ACTOR struct 
+             4@ += 0x4C // integer values 
+             0A8C: write_memory 0x7DBCCC size 2 value 0xFFFF virtual_protect 0 
+             0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+             0AA5: call 0x405640 num_params 4 pop 4 4.0 142 0 4@
+            end
+           end        
+           
+           
+           if and
+            8124: last_input_was_keyboard
+            00E1:   player 0 pressed_button 8 //forward
+           then
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x78 // integer values 
+            0A8C: write_memory 0@ size 4 value 0.025 virtual_protect 0
+            
+            0A96: 4@ = actor $PLAYER_ACTOR struct 
+            4@ += 0x4C // integer values 
+            0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+            0AA5: call 0x405640 num_params 4 pop 4 3.0 149 0 4@  
+            0A8D: 12@ = read_memory 0x975424 size 4 virtual_protect 0 
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x14 // integer values 
+            0A8D: 13@ = read_memory 0@ size 4 virtual_protect 0 
+            0@ += 0x4 // integer values 
+            0A8D: 14@ = read_memory 0@ size 4 virtual_protect 0 
+            13@ *= 0.05 // floating-point values 
+            14@ *= 0.05 // floating-point values 
+            006B: 13@ *= 12@ // floating-point values 
+            006B: 14@ *= 12@ // floating-point values 
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x74 // integer values 
+            0A8C: write_memory 0@ size 4 value 14@ virtual_protect 0 
+            0@ -= 0x4 // integer values 
+            0A8C: write_memory 0@ size 4 value 13@ virtual_protect 0 
+           end
+           
+           if and
+            0124: last_input_was_pad
+            00E1:   player 0 pressed_button LEFTSTICKY
+           then
+           0A8D: 10@ = read_memory 0x7DBCB2 size 2 virtual_protect 0 //LEFTSTICKY           
+            if
+             10@ > 127
+            then
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x78 // integer values 
+            0A8C: write_memory 0@ size 4 value 0.025 virtual_protect 0
+            
+            0A96: 4@ = actor $PLAYER_ACTOR struct 
+            4@ += 0x4C // integer values 
+            0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+            0AA5: call 0x405640 num_params 4 pop 4 3.0 149 0 4@  
+            0A8D: 12@ = read_memory 0x975424 size 4 virtual_protect 0 
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x14 // integer values 
+            0A8D: 13@ = read_memory 0@ size 4 virtual_protect 0 
+            0@ += 0x4 // integer values 
+            0A8D: 14@ = read_memory 0@ size 4 virtual_protect 0 
+            13@ *= 0.05 // floating-point values 
+            14@ *= 0.05 // floating-point values 
+            006B: 13@ *= 12@ // floating-point values 
+            006B: 14@ *= 12@ // floating-point values 
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x74 // integer values 
+            0A8C: write_memory 0@ size 4 value 14@ virtual_protect 0 
+            0@ -= 0x4 // integer values 
+            0A8C: write_memory 0@ size 4 value 13@ virtual_protect 0
+            else
+             if and
+              10@ > 0
+              10@ <= 127
+             then
+              0A96: 0@ = actor $PLAYER_ACTOR struct 
+              0@ += 0x78 // integer values 
+              0A8C: write_memory 0@ size 4 value -0.025 virtual_protect 0
+             end
+            end
+           end
+           
+           
+           if and
+            8124: last_input_was_keyboard 
+            00E1:   player 0 pressed_button 9 //backward
+           then
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x78 // integer values 
+            0A8C: write_memory 0@ size 4 value -0.025 virtual_protect 0 
+           end
+       
+       
+           if
+            00E1:   player 0 pressed_button 16  //sprint
+           then
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x78 // integer values 
+            0A8C: write_memory 0@ size 4 value 0.025 virtual_protect 0
+            
+            0A96: 4@ = actor $PLAYER_ACTOR struct 
+            4@ += 76 // integer values 
+            0A8D: 4@ = read_memory 4@ size 4 virtual_protect 0 
+            0AA5: call 0x405640 num_params 4 pop 4 4.0 148 0 4@  
+            0A8D: 12@ = read_memory 9917476 size 4 virtual_protect 0 
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x14 // integer values 
+            0A8D: 13@ = read_memory 0@ size 4 virtual_protect 0 
+            0@ += 0x4 // integer values 
+            0A8D: 14@ = read_memory 0@ size 4 virtual_protect 0 
+            13@ *= 0.12 // floating-point values (never used in VC or GTA 3) 
+            14@ *= 0.12 // floating-point values (never used in VC or GTA 3) 
+            006B: 13@ *= 12@ // floating-point values 
+            006B: 14@ *= 12@ // floating-point values 
+            0A96: 0@ = actor $PLAYER_ACTOR struct 
+            0@ += 0x74 // integer values 
+            0A8C: write_memory 0@ size 4 value 14@ virtual_protect 0 
+            0@ -= 0x4 // integer values 
+            0A8C: write_memory 0@ size 4 value 13@ virtual_protect 0 
+           end           
+      end
+   end
+end
