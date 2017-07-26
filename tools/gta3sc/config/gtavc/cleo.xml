@@ -471,6 +471,12 @@
         <Arg Type="TEXT_LABEL" AllowPointer="true"/>
       </Args>
     </Command>
+    <Command ID="0xac6" Name="GET_LABEL_POINTER" Hash="0xd287a6ce">
+      <Args>
+        <Arg Type="LABEL"/>
+        <Arg Type="INT" Out="true"/>
+      </Args>
+    </Command>
     <Command ID="0xac7" Name="GET_VAR_POINTER" Hash="0xdfc15673">
       <Args>
         <Arg Type="PARAM" AllowTextLabel="true"/>
