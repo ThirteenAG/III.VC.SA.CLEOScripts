@@ -1,0 +1,252 @@
+{$CLEO}
+0000:
+float 0@
+float 1@
+float 2@
+float 3@
+float 4@
+float 5@
+float 6@
+float 7@
+
+const
+	VK_ALT = 0x12
+	VK_V = 0x56
+	VK_PRIOR = 0x21
+	VK_NEXT = 0x22
+	
+	prev_weap = 5
+	next_weap = 7
+	forward = 8     
+	backward = 9     
+	strafe_left = 10
+	strafe_right = 11	
+end
+
+while true
+wait 0 
+    if 0AB1: @KeyComboPressed 2 VK_ALT VK_V 
+    then
+    
+		if 0AB1: @isVC 0
+		then
+			0A8C: write_memory 0xA10B48 size 1 value 1 virtual_protect 1
+			0A8C: write_memory 0x46DA31 size 3 value 0x90 virtual_protect 1
+			0A8C: write_memory 0x46DA38 size 3 value 0x90 virtual_protect 1
+			0A8C: write_memory 0x46DA3F size 3 value 0x90 virtual_protect 1
+			0A8D: 13@ = read_memory 0x551040 size 1 virtual_protect 1
+			0A8D: 14@ = read_memory 0x4A6190 size 1 virtual_protect 1
+			0A8D: 15@ = read_memory 0x557320 size 1 virtual_protect 1
+			0A8C: write_memory 0x551040 size 1 value 0xC3 virtual_protect 1 
+			0A8C: write_memory 0x4A6190 size 1 value 0xC3 virtual_protect 1 
+			0A8C: write_memory 0x557320 size 1 value 0xC3 virtual_protect 1
+		else
+          0A8C: write_memory 0x95CD8B size 1 value 1 virtual_protect 1
+          0A8C: write_memory 0x46E775 size 3 value 0x90 virtual_protect 1
+          0A8C: write_memory 0x46E77C size 3 value 0x90 virtual_protect 1
+          0A8C: write_memory 0x46E783 size 3 value 0x90 virtual_protect 1
+		  0A8D: 13@ = read_memory 0x500F50 size 1 virtual_protect 1
+		  0A8D: 14@ = read_memory 0x48E0E0 size 1 virtual_protect 1
+		  0A8D: 15@ = read_memory 0x5052A0 size 1 virtual_protect 1
+          0A8C: write_memory 0x500F50 size 1 value 0xC3 virtual_protect 1 
+          0A8C: write_memory 0x48E0E0 size 1 value 0xC3 virtual_protect 1 
+          0A8C: write_memory 0x5052A0 size 1 value 0xC3 virtual_protect 1   
+		end
+	
+        while true
+        wait 0
+
+		    0@ = 2.0
+		    if
+		     00E1:   player 0 pressed_button 14 //jump
+		    then
+		     0@ = 0.5
+		    end
+		    
+		    if
+		     00E1:   player 0 pressed_button 16 //sprint
+		    then
+		     0@ = 4.0
+		    end
+
+            if 0AB1: @isVC 0
+            then
+			    0A8D: 1@ = read_memory 0x7E46B8 size 4 virtual_protect 1 //camera position X
+			    0A8D: 2@ = read_memory 0x7E46BC size 4 virtual_protect 1 //camera position Y
+			    0A8D: 3@ = read_memory 0x7E46C0 size 4 virtual_protect 1 //camera position Z
+            else
+			 0A8D: 1@ = read_memory 0x6FAD2C size 4 virtual_protect 1 //camera position X
+			 0A8D: 2@ = read_memory 0x6FAD30 size 4 virtual_protect 1 //camera position Y
+			 0A8D: 3@ = read_memory 0x6FAD34 size 4 virtual_protect 1 //camera position Z
+            end
+            
+            0172: 4@ = actor $PLAYER_ACTOR z_angle
+			02F6: 5@ = sine 4@
+			02F7: 6@ = cosine 4@
+			if 0AB1: @isVC 0
+			then
+			 0A8D: 16@ = read_memory 0x7E48BC size 4 virtual_protect FALSE
+			else
+			 0A8D: 16@ = read_memory 0x6FAF44 size 4 virtual_protect FALSE
+			end
+			16@ *= 57.295779513082320876798154814105	// 180.0 / PI
+			02F6: 7@ = sine 16@
+			
+			if 
+			 0AB0:  key_pressed VK_PRIOR
+			then
+			 3@ += 0@                             
+			end
+			
+			if 
+			 0AB0:  key_pressed VK_NEXT
+			then
+			 3@ -= 0@                             
+			end
+			
+			if 
+			 00E1:   player 0 pressed_button forward
+			then
+			 5@ *= 0@
+			 5@ *= -1.0
+			 6@ *= 0@   
+			 7@ *= 0@  
+			 000B: 1@ += 5@
+			 000B: 2@ += 6@
+			 000B: 3@ += 7@                            
+			end
+			
+			if 
+			 00E1:   player 0 pressed_button backward
+			then
+			 5@ *= 0@
+			 6@ *= 0@   
+			 6@ *= -1.0
+			 7@ *= 0@ 
+             7@ *= -1.0 
+			 000B: 1@ += 5@
+			 000B: 2@ += 6@
+			 000B: 3@ += 7@                            
+			end
+			
+			if 
+			 00E1:   player 0 pressed_button strafe_left
+			then
+			 4@ -= 90.0
+			 02F6: 5@ = sine 4@
+			 02F7: 6@ = cosine 4@
+			 5@ *= 0@
+			 6@ *= 0@   
+             6@ *= -1.0
+			 000B: 1@ += 5@
+			 000B: 2@ += 6@
+			end
+			
+			if 
+			 00E1:   player 0 pressed_button strafe_right
+			then
+			 4@ -= 90.0
+			 02F6: 5@ = sine 4@
+			 02F7: 6@ = cosine 4@
+			 5@ *= 0@
+             5@ *= -1.0
+			 6@ *= 0@   
+			 000B: 1@ += 5@
+			 05DF: write_memory 0x7E46B8 size 4 value 1@ virtual_protect 1
+			 000B: 2@ += 6@
+			 05DF: write_memory 0x7E46BC size 4 value 2@ virtual_protect 1
+			end
+			
+			 if
+			  00E1:   player 0 pressed_button prev_weap
+			 then
+			  00BF: 8@ = current_time_hours, 9@ = current_time_minutes 
+			  8@ += 1
+			  if 8@ > 23
+			  then 8@ = 0
+			  end
+			  00C0: set_current_time 8@ 9@ 
+			 end
+			
+			 if
+			  00E1:   player 0 pressed_button next_weap
+			 then
+			  00BF: 8@ = current_time_hours, 9@ = current_time_minutes 
+			  8@ -= 1
+			  if 8@ < 0
+			  then 8@ = 23
+			  end
+			  00C0: set_current_time 8@ 9@ 
+			 end
+			
+            if 0AB1: @isVC 0
+            then
+			    0A8C: write_memory 0x7E46B8 size 4 value 1@ virtual_protect 1 //camera position X
+			    0A8C: write_memory 0x7E46BC size 4 value 2@ virtual_protect 1 //camera position Y                          
+			    0A8C: write_memory 0x7E46C0 size 4 value 3@ virtual_protect 1 //camera position Z
+            else
+			    0A8C: write_memory 0x6FAD2C size 4 value 1@ virtual_protect 1
+			    0A8C: write_memory 0x6FAD30 size 4 value 2@ virtual_protect 1                        
+			    0A8C: write_memory 0x6FAD34 size 4 value 3@ virtual_protect 1 
+            end
+
+            if 0AB1: @KeyComboPressed 2 VK_ALT VK_V 
+            then
+                if 0AB1: @isVC 0
+                then
+					0A8C: write_memory 0x46DA31 size 2 value 0x5BD9 virtual_protect 1
+					0A8C: write_memory 0x46DA33 size 1 value 0x30 virtual_protect 1
+					0A8C: write_memory 0x46DA38 size 2 value 0x5BD9 virtual_protect 1
+					0A8C: write_memory 0x46DA3A size 1 value 0x34 virtual_protect 1
+					0A8C: write_memory 0x46DA3F size 2 value 0x5BD9 virtual_protect 1
+					0A8C: write_memory 0x46DA41 size 1 value 0x38 virtual_protect 1
+					0A8C: write_memory 0x551040 size 1 value 13@ virtual_protect 1 
+					0A8C: write_memory 0x4A6190 size 1 value 14@ virtual_protect 1
+					0A8C: write_memory 0x557320 size 1 value 15@ virtual_protect 1
+					0A8C: write_memory 0xA10B48 size 1 value 0 virtual_protect 1 
+				else
+					0A8C: write_memory 0x46E775 size 2 value 0x5BD9 virtual_protect 1
+					0A8C: write_memory 0x46E777 size 1 value 0x34 virtual_protect 1
+					0A8C: write_memory 0x46E77C size 2 value 0x5BD9 virtual_protect 1
+					0A8C: write_memory 0x46E77E size 1 value 0x38 virtual_protect 1
+					0A8C: write_memory 0x46E783 size 2 value 0x5BD9 virtual_protect 1
+					0A8C: write_memory 0x46E785 size 1 value 0x3C virtual_protect 1
+					0A8C: write_memory 0x500F50 size 1 value 13@ virtual_protect 1 
+					0A8C: write_memory 0x48E0E0 size 1 value 14@ virtual_protect 1
+					0A8C: write_memory 0x5052A0 size 1 value 15@ virtual_protect 1
+					05DF: write_memory 0x95CD8B size 1 value 0 virtual_protect 1 
+				end
+				break
+            end            
+        end    
+    end 
+end
+
+:KeyComboPressed
+if and
+    0AB0:  key_pressed 0@
+    0AB0:  key_pressed 1@
+then
+    while 0AB0:  key_pressed 0@
+    wait 0
+     if
+      8AB0: not key_pressed 1@
+     then
+      break
+     end
+    end
+    0485:  return_true
+else
+    059A:  return_false
+end
+0AB2: ret 0
+
+:isVC 
+0A8D: 0@ = read_memory 0x667BF0 size 1 virtual_protect 1
+if 0@ == 0x55
+then
+    0485:  return_true
+else
+    059A:  return_false
+end
+0AB2: ret 0
