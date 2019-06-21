@@ -46,6 +46,9 @@ crc32 = 0x5cfa7496 //CarSpeedDependantFOV
                 carFOVMult *= carSpeed
                 carFOVMult /= 3.0f
                 carFOVMult += 1.0f
+                IF carFOVMult > 1.2f
+                   carFOVMult = 1.2f
+                ENDIF
             ELSE
                 GOSUB setDefault
             ENDIF     
